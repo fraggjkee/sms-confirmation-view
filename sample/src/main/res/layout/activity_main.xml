@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <com.fraggjkee.smsconfirmationview.SmsConfirmationView
+        android:id="@+id/sms_code_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        app:scv_codeLength="4"
+        app:scv_symbolBackgroundColor="@android:color/white"
+        app:scv_symbolBorderColor="@android:color/black"
+        app:scv_symbolBorderCornerRadius="8dp"
+        app:scv_symbolBorderWidth="2dp"
+        app:scv_symbolHeight="52dp"
+        app:scv_symbolTextColor="@android:color/black"
+        app:scv_symbolTextSize="24sp"
+        app:scv_symbolWidth="48dp"
+        app:scv_symbolsSpacing="12dp" />
+
+</FrameLayout>

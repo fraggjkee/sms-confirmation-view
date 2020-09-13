@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="SmsConfirmationView">
+        <attr name="scv_symbolWidth" format="dimension" />
+        <attr name="scv_symbolHeight" format="dimension" />
+        <attr name="scv_symbolTextColor" format="color" />
+        <attr name="scv_symbolTextSize" format="dimension" />
+        <attr name="scv_symbolBackgroundColor" format="color" />
+        <attr name="scv_symbolBorderColor" format="color" />
+        <attr name="scv_symbolBorderWidth" format="dimension" />
+        <attr name="scv_symbolBorderCornerRadius" format="dimension" />
+        <attr name="scv_symbolsSpacing" format="dimension" />
+        <attr name="scv_codeLength" format="integer" />
+    </declare-styleable>
+
+</resources>

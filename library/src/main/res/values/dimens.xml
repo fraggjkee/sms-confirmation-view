@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="symbols_spacing">8dp</dimen>
+    <dimen name="symbol_view_corner_radius">2dp</dimen>
+    <dimen name="symbol_view_width">42dp</dimen>
+    <dimen name="symbol_view_height">48dp</dimen>
+    <dimen name="symbol_view_text_size">22sp</dimen>
+    <dimen name="symbol_view_stroke_width">2dp</dimen>
+
+</resources>
