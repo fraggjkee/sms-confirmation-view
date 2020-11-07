@@ -45,12 +45,14 @@ internal class SymbolView(context: Context, style: Style) : View(context) {
         }
 
         borderPaint = Paint().apply {
+            this.isAntiAlias = true
             this.color = style.borderColor
             this.style = Paint.Style.STROKE
             this.strokeWidth = style.borderWidth.toFloat()
         }
 
         textPaint = Paint().apply {
+            this.isAntiAlias = true
             this.color = style.textColor
             this.textSize = textSizePx.toFloat()
             this.typeface = Typeface.DEFAULT_BOLD
