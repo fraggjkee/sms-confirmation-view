@@ -1,5 +1,5 @@
 # SmsConfirmationView
-A custom Android's `View` implementing all the necessary UI for a typical "enter SMS code" flow.
+A custom Android's `View` implementing all the necessary UI for a typical "enter SMS / PIN code" flow.
 <img src="images/demo.png?raw=true" width="400">
 
 # Installation
