@@ -1,5 +1,5 @@
 # SmsConfirmationView
-A custom Android's `View` implementing all the necessary UI for a typical "enter SMS / PIN code" flow.
+A custom Android's `View` implementing all the necessary UI for a typical "enter SMS / PIN code" flow. Can be used for verification of any digit-based codes (SMS verification, PIN verification, etc.).
 <img src="images/demo.png?raw=true" width="400">
 
 # Installation
