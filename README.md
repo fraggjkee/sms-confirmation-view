@@ -37,6 +37,8 @@ view.onChangeListener = SmsConfirmationView.OnChangeListener { code, isComplete 
 }
 ```
 
+You cal also get/set the code using the `enteredCode` property.
+
 # Customization
 Here's the list of available XML attributes:
 - `scv_codeLength`: expected confirmation code length. Default value = [4](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/java/com/fraggjkee/smsconfirmationview/SmsConfirmationView.kt#L186)
