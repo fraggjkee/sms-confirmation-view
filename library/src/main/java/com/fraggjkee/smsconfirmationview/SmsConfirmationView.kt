@@ -1,7 +1,7 @@
 package com.fraggjkee.smsconfirmationview
 
 import android.annotation.SuppressLint
-import android.content.Context
+import android.content.*
 import android.text.InputType
 import android.util.AttributeSet
 import android.view.KeyEvent
@@ -12,8 +12,14 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.widget.LinearLayout
 import android.widget.Space
+import androidx.activity.result.ActivityResultLauncher
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
 import androidx.core.view.postDelayed
+import com.fraggjkee.smsconfirmationview.smsretriever.SmsParser
+import com.fraggjkee.smsconfirmationview.smsretriever.SmsRetrieverContract
+import com.fraggjkee.smsconfirmationview.smsretriever.SmsRetrieverReceiver
+import com.google.android.gms.auth.api.phone.SmsRetriever
 
 class SmsConfirmationView @JvmOverloads constructor(
     context: Context,
@@ -42,6 +48,9 @@ class SmsConfirmationView @JvmOverloads constructor(
             updateState()
         }
 
+    private val smsRetrieverResultLauncher: ActivityResultLauncher<Intent>?
+    private val smsBroadcastReceiver: BroadcastReceiver
+
     private val symbolSubviews: Sequence<SymbolView>
         get() = children.filterIsInstance<SymbolView>()
 
@@ -55,6 +64,13 @@ class SmsConfirmationView @JvmOverloads constructor(
             else SmsConfirmationViewStyleUtils.getFromAttributes(attrs, context)
 
         updateState()
+
+        smsRetrieverResultLauncher = getActivity()?.registerForSmsRetrieverResult()
+        smsBroadcastReceiver = object : SmsRetrieverReceiver() {
+            override fun onConsentIntentRetrieved(intent: Intent) {
+                smsRetrieverResultLauncher?.launch(intent)
+            }
+        }
 
         if (isInEditMode) {
             repeat(codeLength) {
@@ -103,6 +119,7 @@ class SmsConfirmationView @JvmOverloads constructor(
             requestFocus()
             showKeyboard()
         }
+        context.registerSmsVerificationReceiver(smsBroadcastReceiver)
     }
 
     private fun handleKeyEvent(keyCode: Int, event: KeyEvent): Boolean = when {
@@ -143,6 +160,15 @@ class SmsConfirmationView @JvmOverloads constructor(
         this.enteredCode = enteredCode.substring(0, enteredCode.length - 1)
     }
 
+    private fun AppCompatActivity.registerForSmsRetrieverResult(): ActivityResultLauncher<Intent> {
+        return registerForActivityResult(SmsRetrieverContract()) { smsContent ->
+            val view = this@SmsConfirmationView
+            smsContent?.takeIf { it.isBlank().not() }
+                ?.let { SmsParser.parseOneTimeCode(it, view.codeLength) }
+                ?.let { view.enteredCode = it }
+        }
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_DOWN && requestFocus()) {
@@ -162,6 +188,11 @@ class SmsConfirmationView @JvmOverloads constructor(
         }
 
         return BaseInputConnection(this, false)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        context.unregisterReceiver(smsBroadcastReceiver)
     }
 
     /**
@@ -186,4 +217,15 @@ class SmsConfirmationView @JvmOverloads constructor(
         internal const val DEFAULT_CODE_LENGTH = 4
         private const val KEYBOARD_AUTO_SHOW_DELAY = 500L
     }
+}
+
+private fun Context.registerSmsVerificationReceiver(receiver: BroadcastReceiver) {
+    registerReceiver(
+        receiver,
+        IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION),
+        SmsRetriever.SEND_PERMISSION,
+        null
+    )
+
+    SmsRetriever.getClient(this).startSmsUserConsent(null)
 }
