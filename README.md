@@ -1,5 +1,7 @@
 # SmsConfirmationView
 A custom Android's `View` implementing all the necessary UI for a typical "enter SMS / PIN code" flow. Can be used for verification of any digit-based codes (SMS verification, PIN verification, etc.).
+
+Supports automatic code retrieval from incoming SMS messages. This feature is implemented using the [Consent API](https://developers.google.com/identity/sms-retriever/user-consent/overview).
 <img src="images/demo.png?raw=true" width="400">
 
 # Installation
