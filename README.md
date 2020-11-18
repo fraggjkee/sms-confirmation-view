@@ -2,7 +2,8 @@
 A custom Android's `View` implementing all the necessary UI for a typical "enter SMS / PIN code" flow. Can be used for verification of any digit-based codes (SMS verification, PIN verification, etc.).
 
 Supports **automatic code retrieval from incoming SMS messages**. This feature is implemented using the [Consent API](https://developers.google.com/identity/sms-retriever/user-consent/overview).
-<img src="images/demo.png?raw=true" width="400">
+
+<img src="/images/Screenshot_1605712810.png"  width="300"><img src="/images/Screenshot_1605712815.png"  width="300">
 
 # Installation
 **Step 1.** Add the JitPack repository to your build file. Add it in your root build.gradle at the end of repositories:
@@ -45,6 +46,7 @@ You cal also get/set the code using the `enteredCode` property.
 This SMS verification view supports Android's DataBinding framework, including its two-way version. The list of available adapters can be found [here](https://github.com/fraggjkee/sms-confirmation-view/blob/master/library/src/main/java/com/fraggjkee/smsconfirmationview/BindingAdapters.kt).
 
 # Customization
+<img src="images/demo.png?raw=true" width="400">
 Here's the list of available XML attributes:
 - `scv_codeLength`: expected confirmation code length. Default value = [4](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/java/com/fraggjkee/smsconfirmationview/SmsConfirmationView.kt#L186)
 - `scv_symbolsSpacing`: gap between individual symbol subviews. Default value = [8dp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L4)
