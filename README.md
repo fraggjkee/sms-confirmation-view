@@ -3,7 +3,7 @@ A custom Android's `View` implementing all the necessary UI for a typical "enter
 
 Supports **automatic code retrieval from incoming SMS messages**. This feature is implemented using the [Consent API](https://developers.google.com/identity/sms-retriever/user-consent/overview).
 
-<img src="/images/Screenshot_1605712810.png"  width="300"><img src="/images/Screenshot_1605712815.png"  width="300">
+<img src="/images/Screenshot_1605712815.png"  width="250"><img src="/images/Screenshot_1605712810.png"  width="250">
 
 # Installation
 **Step 1.** Add the JitPack repository to your build file. Add it in your root build.gradle at the end of repositories:
