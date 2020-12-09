@@ -12,10 +12,13 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.widget.LinearLayout
 import android.widget.Space
+import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
 import androidx.core.view.postDelayed
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.findFragment
+import androidx.lifecycle.Lifecycle
 import com.fraggjkee.smsconfirmationview.smsretriever.SmsParser
 import com.fraggjkee.smsconfirmationview.smsretriever.SmsRetrieverContract
 import com.fraggjkee.smsconfirmationview.smsretriever.SmsRetrieverReceiver
@@ -48,8 +51,16 @@ class SmsConfirmationView @JvmOverloads constructor(
             updateState()
         }
 
-    private val smsRetrieverResultLauncher: ActivityResultLauncher<Intent>?
+    private var smsRetrieverResultLauncher: ActivityResultLauncher<Intent>? = null
     private val smsBroadcastReceiver: BroadcastReceiver
+
+    private val activityResultCallback = ActivityResultCallback<String?> { smsContent ->
+        val view = this@SmsConfirmationView
+        smsContent?.takeIf { it.isBlank().not() }
+            ?.let { SmsParser.parseOneTimeCode(it, view.codeLength) }
+            ?.let { view.enteredCode = it }
+
+    }
 
     private val symbolSubviews: Sequence<SymbolView>
         get() = children.filterIsInstance<SymbolView>()
@@ -59,13 +70,19 @@ class SmsConfirmationView @JvmOverloads constructor(
         isFocusable = true
         isFocusableInTouchMode = true
 
+        // Registering here results in attaching to a parent Activity. We'll do
+        // one more attempt from onAttachedToWindow to recheck if actual parent is a
+        // Fragment.
+        smsRetrieverResultLauncher = getActivity()
+            ?.takeIf { it.lifecycle.currentState < Lifecycle.State.STARTED }
+            ?.registerForActivityResult(SmsRetrieverContract(), activityResultCallback)
+
         style =
             if (attrs == null) SmsConfirmationViewStyleUtils.getDefault(context)
             else SmsConfirmationViewStyleUtils.getFromAttributes(attrs, context)
 
         updateState()
 
-        smsRetrieverResultLauncher = getActivity()?.registerForSmsRetrieverResult()
         smsBroadcastReceiver = object : SmsRetrieverReceiver() {
             override fun onConsentIntentRetrieved(intent: Intent) {
                 smsRetrieverResultLauncher?.launch(intent)
@@ -114,12 +131,21 @@ class SmsConfirmationView @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+
+        val parentFragment = runCatching { findFragment<Fragment>() }.getOrNull()
+        if (parentFragment != null) {
+            smsRetrieverResultLauncher = parentFragment.registerForActivityResult(
+                SmsRetrieverContract(),
+                activityResultCallback
+            )
+        }
+
+        context.registerSmsVerificationReceiver(smsBroadcastReceiver)
         setOnKeyListener { _, keyCode, event -> handleKeyEvent(keyCode, event) }
         postDelayed(KEYBOARD_AUTO_SHOW_DELAY) {
             requestFocus()
             showKeyboard()
         }
-        context.registerSmsVerificationReceiver(smsBroadcastReceiver)
     }
 
     private fun handleKeyEvent(keyCode: Int, event: KeyEvent): Boolean = when {
@@ -158,15 +184,6 @@ class SmsConfirmationView @JvmOverloads constructor(
         }
 
         this.enteredCode = enteredCode.substring(0, enteredCode.length - 1)
-    }
-
-    private fun AppCompatActivity.registerForSmsRetrieverResult(): ActivityResultLauncher<Intent> {
-        return registerForActivityResult(SmsRetrieverContract()) { smsContent ->
-            val view = this@SmsConfirmationView
-            smsContent?.takeIf { it.isBlank().not() }
-                ?.let { SmsParser.parseOneTimeCode(it, view.codeLength) }
-                ?.let { view.enteredCode = it }
-        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
