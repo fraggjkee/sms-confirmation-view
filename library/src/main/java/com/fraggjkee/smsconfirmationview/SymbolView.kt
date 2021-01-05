@@ -25,8 +25,8 @@ internal class SymbolView(context: Context, style: Style) : View(context) {
 
     private val backgroundRect = RectF()
 
-    private var backgroundPaint: Paint
-    private var borderPaint: Paint
+    private val backgroundPaint: Paint
+    private val borderPaint: Paint
     private val textPaint: Paint
 
     private var textSize: Size
