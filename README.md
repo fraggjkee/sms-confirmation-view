@@ -3,6 +3,8 @@ A custom Android's `View` implementing all the necessary UI for a typical "enter
 
 Supports **automatic code retrieval from incoming SMS messages**. This feature is implemented using the [Consent API](https://developers.google.com/identity/sms-retriever/user-consent/overview).
 
+You may find my initial motivations & a little bit more detailed information in this [Medium post](https://medium.com/swlh/implementing-the-complete-sms-verification-flow-using-consent-api-in-android-ae0327f74658).
+
 <img src="/images/Screenshot_1605712815.png"  width="250"><img src="/images/Screenshot_1605712810.png"  width="250">
 
 # Installation
