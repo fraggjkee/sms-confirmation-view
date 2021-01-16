@@ -44,6 +44,6 @@ dependencies {
 
     // Contains modern "Start activity/fragment for result" APIs which are
     // required for SMS retrieval feature
-    implementation "androidx.activity:activity-ktx:1.2.0-beta01"
-    implementation "androidx.fragment:fragment-ktx:1.3.0-beta01"
+    implementation "androidx.activity:activity-ktx:1.2.0-rc01"
+    implementation "androidx.fragment:fragment-ktx:1.3.0-rc01"
 }
