@@ -132,7 +132,9 @@ class SmsConfirmationView @JvmOverloads constructor(
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
-        val parentFragment = runCatching { findFragment<Fragment>() }.getOrNull()
+        val parentFragment = runCatching { findFragment<Fragment>() }
+            .getOrNull()
+            ?.takeIf { it.lifecycle.currentState < Lifecycle.State.RESUMED }
         if (parentFragment != null) {
             smsRetrieverResultLauncher = parentFragment.registerForActivityResult(
                 SmsRetrieverContract(),
