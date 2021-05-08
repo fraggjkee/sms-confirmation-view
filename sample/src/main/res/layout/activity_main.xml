@@ -21,6 +21,7 @@
         app:scv_symbolTextColor="@android:color/black"
         app:scv_symbolTextSize="24sp"
         app:scv_symbolWidth="48dp"
+        app:scv_smsDetectionMode="manual"
         app:scv_symbolsSpacing="12dp" />
 
 </FrameLayout>

@@ -23,7 +23,7 @@ internal object SmsConfirmationViewStyleUtils {
             defaultStyle = SmsConfirmationView.Style(
                 codeLength = SmsConfirmationView.DEFAULT_CODE_LENGTH,
                 symbolsSpacing = resources.getDimensionPixelSize(R.dimen.symbols_spacing),
-                symbolViewStyle = symbolViewStyle
+                symbolViewStyle = symbolViewStyle,
             )
         }
         return defaultStyle!!
@@ -71,7 +71,6 @@ internal object SmsConfirmationViewStyleUtils {
                 R.styleable.SmsConfirmationView_scv_symbolBorderCornerRadius,
                 defaultSymbolStyle.borderCornerRadius
             )
-
             val codeLength = getInt(
                 R.styleable.SmsConfirmationView_scv_codeLength,
                 defaultStyle.codeLength
@@ -80,6 +79,10 @@ internal object SmsConfirmationViewStyleUtils {
                 R.styleable.SmsConfirmationView_scv_symbolsSpacing,
                 defaultStyle.symbolsSpacing
             )
+            val smsDetectionMode = getInt(
+                R.styleable.SmsConfirmationView_scv_smsDetectionMode,
+                SmsConfirmationView.SmsDetectionMode.AUTO.ordinal
+            ).let { SmsConfirmationView.SmsDetectionMode.values()[it] }
 
             recycle()
 
@@ -95,7 +98,8 @@ internal object SmsConfirmationViewStyleUtils {
                     borderCornerRadius = cornerRadius,
                     textColor = symbolTextColor,
                     textSize = symbolTextSize
-                )
+                ),
+                smsDetectionMode = smsDetectionMode
             )
         }
     }

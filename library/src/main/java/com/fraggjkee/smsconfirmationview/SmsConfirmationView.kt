@@ -23,6 +23,7 @@ import com.fraggjkee.smsconfirmationview.smsretriever.SmsParser
 import com.fraggjkee.smsconfirmationview.smsretriever.SmsRetrieverContract
 import com.fraggjkee.smsconfirmationview.smsretriever.SmsRetrieverReceiver
 import com.google.android.gms.auth.api.phone.SmsRetriever
+import com.google.android.gms.auth.api.phone.SmsRetrieverClient
 
 class SmsConfirmationView @JvmOverloads constructor(
     context: Context,
@@ -51,16 +52,22 @@ class SmsConfirmationView @JvmOverloads constructor(
             updateState()
         }
 
-    private var smsRetrieverResultLauncher: ActivityResultLauncher<Intent>? = null
-    private val smsBroadcastReceiver: BroadcastReceiver
+    private val smsDetectionMode: SmsDetectionMode get() = style.smsDetectionMode
+
+    private val smsBroadcastReceiver: BroadcastReceiver = object : SmsRetrieverReceiver() {
+        override fun onConsentIntentRetrieved(intent: Intent) {
+            smsRetrieverResultLauncher?.launch(intent)
+        }
+    }
 
     private val activityResultCallback = ActivityResultCallback<String?> { smsContent ->
         val view = this@SmsConfirmationView
         smsContent?.takeIf { it.isBlank().not() }
             ?.let { SmsParser.parseOneTimeCode(it, view.codeLength) }
             ?.let { view.enteredCode = it }
-
     }
+
+    private var smsRetrieverResultLauncher: ActivityResultLauncher<Intent>? = null
 
     private val symbolSubviews: Sequence<SymbolView>
         get() = children.filterIsInstance<SymbolView>()
@@ -70,23 +77,18 @@ class SmsConfirmationView @JvmOverloads constructor(
         isFocusable = true
         isFocusableInTouchMode = true
 
-        // Registering here results in attaching to a parent Activity. We'll do
-        // one more attempt from onAttachedToWindow to recheck if actual parent is a
-        // Fragment.
-        smsRetrieverResultLauncher = getActivity()
-            ?.takeIf { it.lifecycle.currentState < Lifecycle.State.STARTED }
-            ?.registerForActivityResult(SmsRetrieverContract(), activityResultCallback)
-
         style =
             if (attrs == null) SmsConfirmationViewStyleUtils.getDefault(context)
             else SmsConfirmationViewStyleUtils.getFromAttributes(attrs, context)
-
         updateState()
 
-        smsBroadcastReceiver = object : SmsRetrieverReceiver() {
-            override fun onConsentIntentRetrieved(intent: Intent) {
-                smsRetrieverResultLauncher?.launch(intent)
-            }
+        if (smsDetectionMode != SmsDetectionMode.DISABLED) {
+            // Registering here results in attaching to a parent Activity. We'll do
+            // one more attempt from onAttachedToWindow to recheck if actual parent is a
+            // Fragment.
+            smsRetrieverResultLauncher = getActivity()
+                ?.takeIf { it.lifecycle.currentState < Lifecycle.State.STARTED }
+                ?.registerForActivityResult(SmsRetrieverContract(), activityResultCallback)
         }
 
         if (isInEditMode) {
@@ -132,21 +134,25 @@ class SmsConfirmationView @JvmOverloads constructor(
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
-        val parentFragment = runCatching { findFragment<Fragment>() }
-            .getOrNull()
-            ?.takeIf { it.lifecycle.currentState < Lifecycle.State.RESUMED }
-        if (parentFragment != null) {
-            smsRetrieverResultLauncher = parentFragment.registerForActivityResult(
-                SmsRetrieverContract(),
-                activityResultCallback
-            )
-        }
-
-        context.registerSmsVerificationReceiver(smsBroadcastReceiver)
         setOnKeyListener { _, keyCode, event -> handleKeyEvent(keyCode, event) }
         postDelayed(KEYBOARD_AUTO_SHOW_DELAY) {
             requestFocus()
             showKeyboard()
+        }
+
+        if (smsDetectionMode == SmsDetectionMode.DISABLED) return
+        runCatching { findFragment<Fragment>() }
+            .getOrNull()
+            ?.takeIf { it.lifecycle.currentState < Lifecycle.State.RESUMED }
+            ?.let { parentFragment ->
+                smsRetrieverResultLauncher = parentFragment.registerForActivityResult(
+                    SmsRetrieverContract(),
+                    activityResultCallback
+                )
+            }
+
+        if (smsDetectionMode == SmsDetectionMode.AUTO) {
+            startListeningForIncomingMessagesInternal()
         }
     }
 
@@ -215,6 +221,25 @@ class SmsConfirmationView @JvmOverloads constructor(
     }
 
     /**
+     * Trigger [SmsRetrieverClient.startSmsUserConsent] method which will make the view
+     * listen for incoming messages for the next 5 minutes.
+     *
+     * Can only be used with [SmsDetectionMode.MANUAL]
+     */
+    fun startListeningForIncomingMessages() {
+        if (smsDetectionMode != SmsDetectionMode.MANUAL) {
+            throw IllegalStateException(
+                "startListeningForIncomingMessages can only be used with SmsDetectionMode.MANUAL"
+            )
+        }
+        startListeningForIncomingMessagesInternal()
+    }
+
+    private fun startListeningForIncomingMessagesInternal() {
+        context.registerSmsVerificationReceiver(smsBroadcastReceiver)
+    }
+
+    /**
      * Interface definition for a callback invoked when a views's entered code is changed.
      */
     fun interface OnChangeListener {
@@ -229,8 +254,30 @@ class SmsConfirmationView @JvmOverloads constructor(
     internal data class Style(
         val codeLength: Int,
         val symbolsSpacing: Int,
-        val symbolViewStyle: SymbolView.Style
+        val symbolViewStyle: SymbolView.Style,
+        val smsDetectionMode: SmsDetectionMode = SmsDetectionMode.AUTO
     )
+
+    internal enum class SmsDetectionMode {
+        /**
+         * Prevent [SmsConfirmationView] from using SMS Consent API, i.e. this option
+         * simply disables automatic SMS detection.
+         */
+        DISABLED,
+
+        /**
+         * Default option. [SmsConfirmationView] will try to use SMS Consent API to
+         * detect incoming messages and read confirmation codes from it.
+         */
+        AUTO,
+
+        /**
+         * Like [AUTO] but gives you more control when to actually start listening for
+         * incoming messages via [startListeningForIncomingMessages]. Can be useful in
+         * some cases as SMS Consent API cannot be active for more than 5 minutes.
+         */
+        MANUAL
+    }
 
     companion object {
         internal const val DEFAULT_CODE_LENGTH = 4

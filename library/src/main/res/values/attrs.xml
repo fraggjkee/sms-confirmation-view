@@ -12,6 +12,11 @@
         <attr name="scv_symbolBorderCornerRadius" format="dimension" />
         <attr name="scv_symbolsSpacing" format="dimension" />
         <attr name="scv_codeLength" format="integer" />
+        <attr name="scv_smsDetectionMode" format="enum">
+            <enum name="disabled" value="0" />
+            <enum name="auto" value="1" />
+            <enum name="manual" value="2" />
+        </attr>
     </declare-styleable>
 
 </resources>

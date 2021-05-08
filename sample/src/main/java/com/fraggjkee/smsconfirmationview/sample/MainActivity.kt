@@ -16,5 +16,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "value: $code, isComplete: $isComplete", Toast.LENGTH_SHORT)
                 .show()
         }
+
+        view.startListeningForIncomingMessages()
     }
 }
