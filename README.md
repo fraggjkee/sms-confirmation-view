@@ -64,6 +64,11 @@ Here's the list of available XML attributes:
 
 All of these attributes can also be changed **programatically** (XML customization is the preferred way though), check out the list of available extensions [here](https://github.com/fraggjkee/SmsConfirmationView/blob/master/library/src/main/java/com/fraggjkee/smsconfirmationview/SmsConfirmationViewExt.kt).
 
+# SMS Detection modes
+- `app:scv_smsDetectionMode="disabled"`: Prevents the view from using SMS Consent API, i.e. this option simply disables automatic SMS detection.
+- `app:scv_smsDetectionMode="auto"`: Default option. `SmsConfirmationView` will try to use SMS Consent API to detect incoming messages and extract confirmation codes out of the messages.
+- `app:scv_smsDetectionMode="manual"`: Like `auto` but gives you more control when to actually start listening for incoming messages via `startListeningForIncomingMessages` method. Can be useful in some cases as SMS Consent API cannot be active for more than 5 minutes.
+
 License
 ----
 Apache 2.0
