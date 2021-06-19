@@ -17,7 +17,7 @@ internal fun Context.getThemeColor(@AttrRes attrRes: Int): Int {
 
 internal fun View.showKeyboard() {
     val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+    imm.showSoftInput(this, InputMethodManager.SHOW_FORCED)
 }
 
 internal fun View.hideKeyboard() {
