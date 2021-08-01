@@ -14,7 +14,7 @@ fun setEnteredCode(view: SmsConfirmationView, code: String?) {
 }
 
 @InverseBindingAdapter(attribute = "enteredCode")
-fun getEnteredCode(view: SmsConfirmationView): String? = view.enteredCode
+fun getEnteredCode(view: SmsConfirmationView): String = view.enteredCode
 
 @BindingAdapter(
     "onChangeListener",
