@@ -92,6 +92,18 @@ var SmsConfirmationView.symbolBorderColor: Int
     get() = style.symbolViewStyle.borderColor
 
 /**
+ * @see R.styleable.SmsConfirmationView_scv_symbolBorderActiveColor
+ */
+var SmsConfirmationView.symbolBorderActiveColor: Int
+    set(value) {
+        val updatedStyle = style.symbolViewStyle.copy(
+            borderColorActive = value
+        )
+        this.style = style.copy(symbolViewStyle = updatedStyle)
+    }
+    get() = style.symbolViewStyle.borderColorActive
+
+/**
  * @see R.styleable.SmsConfirmationView_scv_symbolBorderWidth
  */
 var SmsConfirmationView.symbolBorderWidth: Int

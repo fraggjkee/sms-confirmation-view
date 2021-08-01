@@ -15,6 +15,7 @@ internal object SmsConfirmationViewStyleUtils {
                 height = resources.getDimensionPixelSize(R.dimen.symbol_view_height),
                 backgroundColor = context.getThemeColor(R.attr.colorSurface),
                 borderColor = context.getThemeColor(R.attr.colorPrimary),
+                borderColorActive = context.getThemeColor(R.attr.colorPrimary),
                 borderWidth = resources.getDimensionPixelSize(R.dimen.symbol_view_stroke_width),
                 borderCornerRadius = resources.getDimension(R.dimen.symbol_view_corner_radius),
                 textColor = context.getThemeColor(R.attr.colorOnSurface),
@@ -38,6 +39,7 @@ internal object SmsConfirmationViewStyleUtils {
         val defaultSymbolStyle = defaultStyle.symbolViewStyle
         val typedArray =
             context.theme.obtainStyledAttributes(attrs, R.styleable.SmsConfirmationView, 0, 0)
+
         return with(typedArray) {
             val symbolWidth = getDimensionPixelSize(
                 R.styleable.SmsConfirmationView_scv_symbolWidth,
@@ -54,6 +56,10 @@ internal object SmsConfirmationViewStyleUtils {
             val symbolBorderColor = getColor(
                 R.styleable.SmsConfirmationView_scv_symbolBorderColor,
                 defaultSymbolStyle.borderColor
+            )
+            val symbolBorderActiveColor = getColor(
+                R.styleable.SmsConfirmationView_scv_symbolBorderActiveColor,
+                symbolBorderColor
             )
             val symbolBorderWidth = getDimensionPixelSize(
                 R.styleable.SmsConfirmationView_scv_symbolBorderWidth,
@@ -94,6 +100,7 @@ internal object SmsConfirmationViewStyleUtils {
                     height = symbolHeight,
                     backgroundColor = symbolBackgroundColor,
                     borderColor = symbolBorderColor,
+                    borderColorActive = symbolBorderActiveColor,
                     borderWidth = symbolBorderWidth,
                     borderCornerRadius = cornerRadius,
                     textColor = symbolTextColor,

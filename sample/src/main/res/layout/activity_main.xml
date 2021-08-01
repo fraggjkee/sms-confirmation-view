@@ -13,7 +13,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         app:scv_codeLength="4"
+        app:scv_smsDetectionMode="manual"
         app:scv_symbolBackgroundColor="@android:color/white"
+        app:scv_symbolBorderActiveColor="@android:color/holo_blue_dark"
         app:scv_symbolBorderColor="@android:color/black"
         app:scv_symbolBorderCornerRadius="8dp"
         app:scv_symbolBorderWidth="2dp"
@@ -21,7 +23,6 @@
         app:scv_symbolTextColor="@android:color/black"
         app:scv_symbolTextSize="24sp"
         app:scv_symbolWidth="48dp"
-        app:scv_smsDetectionMode="manual"
         app:scv_symbolsSpacing="12dp" />
 
 </FrameLayout>

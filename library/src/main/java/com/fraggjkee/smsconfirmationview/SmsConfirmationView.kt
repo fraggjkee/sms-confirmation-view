@@ -90,12 +90,6 @@ class SmsConfirmationView @JvmOverloads constructor(
                 ?.takeIf { it.lifecycle.currentState < Lifecycle.State.STARTED }
                 ?.registerForActivityResult(SmsRetrieverContract(), activityResultCallback)
         }
-
-        if (isInEditMode) {
-            repeat(codeLength) {
-                enteredCode += 0.toString()
-            }
-        }
     }
 
     private fun updateState() {
@@ -111,6 +105,7 @@ class SmsConfirmationView @JvmOverloads constructor(
         if (isViewCodeOutdated) {
             symbolSubviews.forEachIndexed { index, view ->
                 view.symbol = enteredCode.getOrNull(index)
+                view.isActive = (enteredCode.length == index)
             }
         }
     }
@@ -120,6 +115,7 @@ class SmsConfirmationView @JvmOverloads constructor(
 
         for (i in 0 until codeLength) {
             val symbolView = SymbolView(context, style.symbolViewStyle)
+            symbolView.isActive = (i == enteredCode.length)
             addView(symbolView)
 
             if (i < codeLength.dec()) {
@@ -206,7 +202,7 @@ class SmsConfirmationView @JvmOverloads constructor(
 
     override fun onCheckIsTextEditor(): Boolean = true
 
-    override fun onCreateInputConnection(outAttrs: EditorInfo): InputConnection? {
+    override fun onCreateInputConnection(outAttrs: EditorInfo): InputConnection {
         with(outAttrs) {
             inputType = InputType.TYPE_CLASS_NUMBER
             imeOptions = EditorInfo.IME_ACTION_DONE

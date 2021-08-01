@@ -1,5 +1,7 @@
 package com.fraggjkee.smsconfirmationview
 
+import android.animation.ArgbEvaluator
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
@@ -8,14 +10,26 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.Px
 
+private const val textPaintAlphaAnimDuration = 200L
+private const val borderPaintAlphaAnimDuration = 300L
+
 @SuppressLint("ViewConstructor")
-internal class SymbolView(context: Context, style: Style) : View(context) {
+internal class SymbolView(context: Context, private val symbolStyle: Style) : View(context) {
 
     var symbol: Char? = null
         set(value) {
+            if (field == value) return
             field = value
             textSize = calculateTextSize(symbol)
-            invalidate()
+            if (value == null) invalidate()
+            else animateText()
+        }
+
+    var isActive: Boolean = false
+        set(value) {
+            if (field == value) return
+            field = value
+            animateBorderColorChange(field)
         }
 
     private val desiredW: Int
@@ -32,28 +46,28 @@ internal class SymbolView(context: Context, style: Style) : View(context) {
     private var textSize: Size
 
     init {
-        desiredW = style.width
-        desiredH = style.height
-        textSizePx = style.textSize
-        cornerRadius = style.borderCornerRadius
+        desiredW = symbolStyle.width
+        desiredH = symbolStyle.height
+        textSizePx = symbolStyle.textSize
+        cornerRadius = symbolStyle.borderCornerRadius
 
         textSize = calculateTextSize(symbol)
 
         backgroundPaint = Paint().apply {
-            this.color = style.backgroundColor
+            this.color = symbolStyle.backgroundColor
             this.style = Paint.Style.FILL
         }
 
         borderPaint = Paint().apply {
             this.isAntiAlias = true
-            this.color = style.borderColor
+            this.color = symbolStyle.borderColor
             this.style = Paint.Style.STROKE
-            this.strokeWidth = style.borderWidth.toFloat()
+            this.strokeWidth = symbolStyle.borderWidth.toFloat()
         }
 
         textPaint = Paint().apply {
             this.isAntiAlias = true
-            this.color = style.textColor
+            this.color = symbolStyle.textColor
             this.textSize = textSizePx.toFloat()
             this.typeface = Typeface.DEFAULT_BOLD
             this.textAlign = Paint.Align.CENTER
@@ -66,6 +80,36 @@ internal class SymbolView(context: Context, style: Style) : View(context) {
             textPaint.getTextBounds(it.toString(), 0, 1, textBounds)
             Size(textBounds.width(), textBounds.height())
         } ?: Size(0, 0)
+    }
+
+    private fun animateText() {
+        ObjectAnimator.ofInt(textPaint, "alpha", 0, 255)
+            .apply {
+                duration = textPaintAlphaAnimDuration
+                addUpdateListener { invalidate() }
+            }
+            .start()
+    }
+
+    private fun animateBorderColorChange(isActive: Boolean) {
+        val borderColor = symbolStyle.borderColor
+        val borderColorActive = symbolStyle.borderColorActive
+        if (borderColor == borderColorActive) {
+            return
+        }
+
+        val colorFrom =
+            if (isActive) borderColor
+            else borderColorActive
+        val colorTo =
+            if (isActive) borderColorActive
+            else borderColor
+        ObjectAnimator.ofObject(borderPaint, "color", ArgbEvaluator(), colorFrom, colorTo)
+            .apply {
+                duration = borderPaintAlphaAnimDuration
+                addUpdateListener { invalidate() }
+            }
+            .start()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -111,6 +155,7 @@ internal class SymbolView(context: Context, style: Style) : View(context) {
         @Px val height: Int,
         @ColorInt val backgroundColor: Int,
         @ColorInt val borderColor: Int,
+        @ColorInt val borderColorActive: Int,
         @Px val borderWidth: Int,
         val borderCornerRadius: Float,
         @ColorInt val textColor: Int,
