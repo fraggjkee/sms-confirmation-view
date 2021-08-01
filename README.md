@@ -5,7 +5,8 @@ Supports **automatic code retrieval from incoming SMS messages**. This feature i
 
 You may find my initial motivations & a little bit more detailed information in this [Medium post](https://medium.com/swlh/implementing-the-complete-sms-verification-flow-using-consent-api-in-android-ae0327f74658).
 
-<img src="/images/Screenshot_1605712815.png"  width="250"><img src="/images/Screenshot_1605712810.png"  width="250">
+<img src="/images/demo-gif.gif"  width="250">
+<img src="/images/Screenshot_1605712810.png"  width="250">
 
 # Installation
 **Step 1.** Add the JitPack repository to your build file. Add it in your root build.gradle at the end of repositories:
@@ -59,6 +60,7 @@ Here's the list of available XML attributes:
 - `scv_symbolTextSize`: text size used within symbol subviews. Default value = [22sp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L8)
 - `scv_symbolBackgroundColor`: filler color for symbol subviews. Default value = `?attr/colorSurface` or `Color.BLACK` if such attribute is not defined in your app's theme.
 - `scv_symbolBorderColor`: color to use for symbol subview's stroke outline. Default value = `?attr/colorSurface` or `Color.BLACK` if such attribute is not defined in your app's theme.
+- `scv_symbolBorderActiveColor`: color to use for symbol subview's stroke outline for an active symbol. Default value = `scv_symbolBorderColor`.
 - `scv_symbolBorderWidth`: thickness of the stroke used to draw symbol subview's border. Default value = [2dp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L9)
 - `scv_symbolBorderCornerRadius`: corner radius for symbol subview's border. Default value = [2dp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L5)
 
