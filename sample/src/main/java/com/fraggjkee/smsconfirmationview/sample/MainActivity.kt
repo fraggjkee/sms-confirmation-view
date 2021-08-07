@@ -1,8 +1,8 @@
 package com.fraggjkee.smsconfirmationview.sample
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.fraggjkee.smsconfirmationview.SmsConfirmationView
 
 class MainActivity : AppCompatActivity() {

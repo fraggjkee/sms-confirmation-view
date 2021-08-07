@@ -54,6 +54,7 @@ class SmsConfirmationView @JvmOverloads constructor(
 
     private val smsDetectionMode: SmsDetectionMode get() = style.smsDetectionMode
 
+    private var isReceiverRegistered: Boolean = false
     private val smsBroadcastReceiver: BroadcastReceiver = object : SmsRetrieverReceiver() {
         override fun onConsentIntentRetrieved(intent: Intent) {
             smsRetrieverResultLauncher?.launch(intent)
@@ -213,7 +214,9 @@ class SmsConfirmationView @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        context.unregisterReceiver(smsBroadcastReceiver)
+        if (isReceiverRegistered) {
+            context.unregisterReceiver(smsBroadcastReceiver)
+        }
     }
 
     /**
@@ -232,7 +235,16 @@ class SmsConfirmationView @JvmOverloads constructor(
     }
 
     private fun startListeningForIncomingMessagesInternal() {
-        context.registerSmsVerificationReceiver(smsBroadcastReceiver)
+        context.registerReceiver(
+            smsBroadcastReceiver,
+            IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION),
+            SmsRetriever.SEND_PERMISSION,
+            null
+        )
+
+        SmsRetriever.getClient(context).startSmsUserConsent(null)
+
+        isReceiverRegistered = true
     }
 
     /**
@@ -279,15 +291,4 @@ class SmsConfirmationView @JvmOverloads constructor(
         internal const val DEFAULT_CODE_LENGTH = 4
         private const val KEYBOARD_AUTO_SHOW_DELAY = 500L
     }
-}
-
-private fun Context.registerSmsVerificationReceiver(receiver: BroadcastReceiver) {
-    registerReceiver(
-        receiver,
-        IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION),
-        SmsRetriever.SEND_PERMISSION,
-        null
-    )
-
-    SmsRetriever.getClient(this).startSmsUserConsent(null)
 }
