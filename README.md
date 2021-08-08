@@ -21,7 +21,7 @@ allprojects {
 **Step 2.** Add the dependency
 ```gradle
 dependencies {
-    implementation "com.github.fraggjkee:sms-confirmation-view:1.2"
+    implementation "com.github.fraggjkee:sms-confirmation-view:1.4.2"
 }
 ```
 
