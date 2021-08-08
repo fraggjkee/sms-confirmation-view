@@ -2,6 +2,7 @@
 <resources>
 
     <declare-styleable name="SmsConfirmationView">
+        <attr name="scv_showCursor" format="boolean" />
         <attr name="scv_symbolWidth" format="dimension" />
         <attr name="scv_symbolHeight" format="dimension" />
         <attr name="scv_symbolTextColor" format="color" />

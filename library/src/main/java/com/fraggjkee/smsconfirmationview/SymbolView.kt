@@ -1,5 +1,6 @@
 package com.fraggjkee.smsconfirmationview
 
+import android.animation.Animator
 import android.animation.ArgbEvaluator
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
@@ -10,27 +11,30 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.Px
 
-private const val textPaintAlphaAnimDuration = 200L
-private const val borderPaintAlphaAnimDuration = 300L
+private const val textPaintAlphaAnimDuration = 100L
+private const val borderPaintAlphaAnimDuration = 200L
+
+private const val cursorAlphaAnimDuration = 500L
+private const val cursorAlphaAnimStartDelay = 200L
+
+private const val cursorSymbol = "|"
 
 @SuppressLint("ViewConstructor")
 internal class SymbolView(context: Context, private val symbolStyle: Style) : View(context) {
 
-    var symbol: Char? = null
+    data class State(
+        val symbol: Char? = null,
+        val isActive: Boolean = false
+    )
+
+    var state: State = State()
         set(value) {
             if (field == value) return
             field = value
-            textSize = calculateTextSize(symbol)
-            if (value == null) invalidate()
-            else animateText()
+            updateState(state)
         }
 
-    var isActive: Boolean = false
-        set(value) {
-            if (field == value) return
-            field = value
-            animateBorderColorChange(field)
-        }
+    private val showCursor: Boolean get() = symbolStyle.showCursor
 
     private val desiredW: Int
     private val desiredH: Int
@@ -45,13 +49,13 @@ internal class SymbolView(context: Context, private val symbolStyle: Style) : Vi
 
     private var textSize: Size
 
+    private var textAnimator: Animator? = null
+
     init {
         desiredW = symbolStyle.width
         desiredH = symbolStyle.height
         textSizePx = symbolStyle.textSize
         cornerRadius = symbolStyle.borderCornerRadius
-
-        textSize = calculateTextSize(symbol)
 
         backgroundPaint = Paint().apply {
             this.color = symbolStyle.backgroundColor
@@ -72,23 +76,42 @@ internal class SymbolView(context: Context, private val symbolStyle: Style) : Vi
             this.typeface = Typeface.DEFAULT_BOLD
             this.textAlign = Paint.Align.CENTER
         }
+
+        textSize = calculateTextSize('0')
     }
 
-    private fun calculateTextSize(symbol: Char?): Size {
-        return symbol?.let {
-            val textBounds = Rect()
-            textPaint.getTextBounds(it.toString(), 0, 1, textBounds)
-            Size(textBounds.width(), textBounds.height())
-        } ?: Size(0, 0)
+    @Suppress("SameParameterValue")
+    private fun calculateTextSize(symbol: Char): Size {
+        val textBounds = Rect()
+        textPaint.getTextBounds(symbol.toString(), 0, 1, textBounds)
+        return Size(textBounds.width(), textBounds.height())
     }
 
-    private fun animateText() {
-        ObjectAnimator.ofInt(textPaint, "alpha", 0, 255)
-            .apply {
-                duration = textPaintAlphaAnimDuration
-                addUpdateListener { invalidate() }
-            }
-            .start()
+    private fun updateState(state: State) = with(state) {
+        textAnimator?.cancel()
+        if (symbol == null && isActive && showCursor) {
+            textPaint.color = symbolStyle.borderColorActive
+            textAnimator = ObjectAnimator.ofInt(textPaint, "alpha", 255, 255, 0, 0)
+                .apply {
+                    duration = cursorAlphaAnimDuration
+                    startDelay = cursorAlphaAnimStartDelay
+                    repeatCount = ObjectAnimator.INFINITE
+                    repeatMode = ObjectAnimator.REVERSE
+                    addUpdateListener { invalidate() }
+                }
+        } else {
+            textPaint.color = symbolStyle.textColor
+            val startAlpha = if (symbol == null) 255 else 127
+            val endAlpha = if (symbol == null) 0 else 255
+            textAnimator = ObjectAnimator.ofInt(textPaint, "alpha", startAlpha, endAlpha)
+                .apply {
+                    duration = textPaintAlphaAnimDuration
+                    addUpdateListener { invalidate() }
+                }
+        }
+
+        textAnimator?.start()
+        animateBorderColorChange(isActive)
     }
 
     private fun animateBorderColorChange(isActive: Boolean) {
@@ -143,7 +166,7 @@ internal class SymbolView(context: Context, private val symbolStyle: Style) : Vi
         )
 
         canvas.drawText(
-            symbol?.toString() ?: "",
+            if (state.isActive && showCursor) cursorSymbol else state.symbol?.toString() ?: "",
             backgroundRect.width() / 2 + borderPaint.strokeWidth / 2,
             backgroundRect.height() / 2 + textSize.height / 2 + borderPaint.strokeWidth / 2,
             textPaint
@@ -151,6 +174,7 @@ internal class SymbolView(context: Context, private val symbolStyle: Style) : Vi
     }
 
     data class Style(
+        val showCursor: Boolean,
         @Px val width: Int,
         @Px val height: Int,
         @ColorInt val backgroundColor: Int,

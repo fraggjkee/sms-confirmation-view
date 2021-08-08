@@ -99,14 +99,16 @@ class SmsConfirmationView @JvmOverloads constructor(
             setupSymbolSubviews()
         }
 
-        val viewCode = symbolSubviews.map { it.symbol }
+        val viewCode = symbolSubviews.map { it.state.symbol }
             .filterNotNull()
             .joinToString(separator = "")
         val isViewCodeOutdated = enteredCode != viewCode
         if (isViewCodeOutdated) {
             symbolSubviews.forEachIndexed { index, view ->
-                view.symbol = enteredCode.getOrNull(index)
-                view.isActive = (enteredCode.length == index)
+                view.state = SymbolView.State(
+                    symbol = enteredCode.getOrNull(index),
+                    isActive = (enteredCode.length == index)
+                )
             }
         }
     }
@@ -116,7 +118,7 @@ class SmsConfirmationView @JvmOverloads constructor(
 
         for (i in 0 until codeLength) {
             val symbolView = SymbolView(context, style.symbolViewStyle)
-            symbolView.isActive = (i == enteredCode.length)
+            symbolView.state = SymbolView.State(isActive = (i == enteredCode.length))
             addView(symbolView)
 
             if (i < codeLength.dec()) {

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:padding="32dp"
     tools:context=".MainActivity">
 
     <com.fraggjkee.smsconfirmationview.SmsConfirmationView
@@ -13,9 +13,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         app:scv_codeLength="4"
+        app:scv_showCursor="true"
         app:scv_smsDetectionMode="manual"
         app:scv_symbolBackgroundColor="@android:color/white"
-        app:scv_symbolBorderActiveColor="@android:color/holo_blue_dark"
+        app:scv_symbolBorderActiveColor="?colorPrimary"
         app:scv_symbolBorderColor="@android:color/black"
         app:scv_symbolBorderCornerRadius="8dp"
         app:scv_symbolBorderWidth="2dp"

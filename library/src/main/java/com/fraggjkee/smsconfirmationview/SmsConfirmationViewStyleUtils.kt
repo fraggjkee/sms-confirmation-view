@@ -11,6 +11,7 @@ internal object SmsConfirmationViewStyleUtils {
         if (defaultStyle == null) {
             val resources = context.resources
             val symbolViewStyle = SymbolView.Style(
+                showCursor = true,
                 width = resources.getDimensionPixelSize(R.dimen.symbol_view_width),
                 height = resources.getDimensionPixelSize(R.dimen.symbol_view_height),
                 backgroundColor = context.getThemeColor(R.attr.colorSurface),
@@ -35,57 +36,61 @@ internal object SmsConfirmationViewStyleUtils {
         context: Context
     ): SmsConfirmationView.Style {
 
-        val defaultStyle = getDefault(context)
-        val defaultSymbolStyle = defaultStyle.symbolViewStyle
+        val defaultStyle: SmsConfirmationView.Style = getDefault(context)
+        val defaultSymbolStyle: SymbolView.Style = defaultStyle.symbolViewStyle
         val typedArray =
             context.theme.obtainStyledAttributes(attrs, R.styleable.SmsConfirmationView, 0, 0)
 
         return with(typedArray) {
-            val symbolWidth = getDimensionPixelSize(
+            val showCursor: Boolean = getBoolean(
+                R.styleable.SmsConfirmationView_scv_showCursor,
+                defaultSymbolStyle.showCursor
+            )
+            val symbolWidth: Int = getDimensionPixelSize(
                 R.styleable.SmsConfirmationView_scv_symbolWidth,
                 defaultSymbolStyle.width
             )
-            val symbolHeight = getDimensionPixelSize(
+            val symbolHeight: Int = getDimensionPixelSize(
                 R.styleable.SmsConfirmationView_scv_symbolHeight,
                 defaultSymbolStyle.height
             )
-            val symbolBackgroundColor = getColor(
+            val symbolBackgroundColor: Int = getColor(
                 R.styleable.SmsConfirmationView_scv_symbolBackgroundColor,
                 defaultSymbolStyle.backgroundColor
             )
-            val symbolBorderColor = getColor(
+            val symbolBorderColor: Int = getColor(
                 R.styleable.SmsConfirmationView_scv_symbolBorderColor,
                 defaultSymbolStyle.borderColor
             )
-            val symbolBorderActiveColor = getColor(
+            val symbolBorderActiveColor: Int = getColor(
                 R.styleable.SmsConfirmationView_scv_symbolBorderActiveColor,
                 symbolBorderColor
             )
-            val symbolBorderWidth = getDimensionPixelSize(
+            val symbolBorderWidth: Int = getDimensionPixelSize(
                 R.styleable.SmsConfirmationView_scv_symbolBorderWidth,
                 defaultSymbolStyle.borderWidth
             )
-            val symbolTextColor = getColor(
+            val symbolTextColor: Int = getColor(
                 R.styleable.SmsConfirmationView_scv_symbolTextColor,
                 defaultSymbolStyle.textColor
             )
-            val symbolTextSize = getDimensionPixelSize(
+            val symbolTextSize: Int = getDimensionPixelSize(
                 R.styleable.SmsConfirmationView_scv_symbolTextSize,
                 defaultSymbolStyle.textSize
             )
-            val cornerRadius = getDimension(
+            val cornerRadius: Float = getDimension(
                 R.styleable.SmsConfirmationView_scv_symbolBorderCornerRadius,
                 defaultSymbolStyle.borderCornerRadius
             )
-            val codeLength = getInt(
+            val codeLength: Int = getInt(
                 R.styleable.SmsConfirmationView_scv_codeLength,
                 defaultStyle.codeLength
             )
-            val symbolsSpacingPx = getDimensionPixelSize(
+            val symbolsSpacingPx: Int = getDimensionPixelSize(
                 R.styleable.SmsConfirmationView_scv_symbolsSpacing,
                 defaultStyle.symbolsSpacing
             )
-            val smsDetectionMode = getInt(
+            val smsDetectionMode: SmsConfirmationView.SmsDetectionMode = getInt(
                 R.styleable.SmsConfirmationView_scv_smsDetectionMode,
                 SmsConfirmationView.SmsDetectionMode.AUTO.ordinal
             ).let { SmsConfirmationView.SmsDetectionMode.values()[it] }
@@ -96,6 +101,7 @@ internal object SmsConfirmationViewStyleUtils {
                 codeLength = codeLength,
                 symbolsSpacing = symbolsSpacingPx,
                 symbolViewStyle = SymbolView.Style(
+                    showCursor = showCursor,
                     width = symbolWidth,
                     height = symbolHeight,
                     backgroundColor = symbolBackgroundColor,

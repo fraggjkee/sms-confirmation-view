@@ -20,6 +20,18 @@ var SmsConfirmationView.symbolsSpacing: Int
     get() = style.symbolsSpacing
 
 /**
+ * @see R.styleable.SmsConfirmationView_scv_showCursor
+ */
+var SmsConfirmationView.showCursor: Boolean
+    set(value) {
+        val updatedStyle = style.symbolViewStyle.copy(
+            showCursor = showCursor
+        )
+        this.style = style.copy(symbolViewStyle = updatedStyle)
+    }
+    get() = style.symbolViewStyle.showCursor
+
+/**
  * @see R.styleable.SmsConfirmationView_scv_symbolWidth
  */
 var SmsConfirmationView.symbolWidth: Int
