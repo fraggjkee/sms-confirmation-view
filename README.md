@@ -1,4 +1,4 @@
-# SmsConfirmationView
+# SmsConfirmationView [![](https://jitpack.io/v/fraggjkee/sms-confirmation-view.svg)](https://jitpack.io/#fraggjkee/sms-confirmation-view)
 A custom Android's `View` implementing all the necessary UI for a typical "enter SMS / PIN code" flow. Can be used for verification of any digit-based codes (SMS verification, PIN verification, etc.).
 
 Supports **automatic code retrieval from incoming SMS messages**. This feature is implemented using the [Consent API](https://developers.google.com/identity/sms-retriever/user-consent/overview).
@@ -21,7 +21,7 @@ allprojects {
 **Step 2.** Add the dependency
 ```gradle
 dependencies {
-    implementation "com.github.fraggjkee:sms-confirmation-view:1.4.2"
+    implementation "com.github.fraggjkee:sms-confirmation-view:1.4.5"
 }
 ```
 
