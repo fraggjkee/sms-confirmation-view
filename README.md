@@ -5,8 +5,8 @@ Supports **automatic code retrieval from incoming SMS messages**. This feature i
 
 You may find my initial motivations & a little bit more detailed information in this [Medium post](https://medium.com/swlh/implementing-the-complete-sms-verification-flow-using-consent-api-in-android-ae0327f74658).
 
-<img src="/images/demo-gif.gif"  width="250">
-<img src="/images/Screenshot_1605712810.png"  width="250">
+<img src="/images/screenshot2.png"  width="250">
+<img src="/images/screenshot1.png"  width="250">
 
 # Installation
 **Step 1.** Add the JitPack repository to your build file. Add it in your root build.gradle at the end of repositories:
