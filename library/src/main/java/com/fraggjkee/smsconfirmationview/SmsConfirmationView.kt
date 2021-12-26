@@ -2,6 +2,8 @@ package com.fraggjkee.smsconfirmationview
 
 import android.annotation.SuppressLint
 import android.content.*
+import android.os.Parcel
+import android.os.Parcelable
 import android.text.InputType
 import android.util.AttributeSet
 import android.view.KeyEvent
@@ -251,6 +253,32 @@ class SmsConfirmationView @JvmOverloads constructor(
         SmsRetriever.getClient(context).startSmsUserConsent(null)
 
         isReceiverRegistered = true
+    }
+
+    override fun onSaveInstanceState(): Parcelable {
+        val superState: Parcelable? = super.onSaveInstanceState()
+        return SavedState(superState, enteredCode)
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable) {
+        if (state !is SavedState) {
+            super.onRestoreInstanceState(state)
+            return
+        }
+
+        super.onRestoreInstanceState(state.superState)
+        enteredCode = state.enteredCode
+    }
+
+    private class SavedState(
+        superState: Parcelable?,
+        val enteredCode: String
+    ) : BaseSavedState(superState) {
+
+        override fun writeToParcel(out: Parcel, flags: Int) {
+            super.writeToParcel(out, flags)
+            out.writeString(enteredCode)
+        }
     }
 
     /**
