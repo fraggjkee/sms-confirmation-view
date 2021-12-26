@@ -57,15 +57,19 @@ class SmsConfirmationView @JvmOverloads constructor(
     private var isReceiverRegistered: Boolean = false
     private val smsBroadcastReceiver: BroadcastReceiver = object : SmsRetrieverReceiver() {
         override fun onConsentIntentRetrieved(intent: Intent) {
-            smsRetrieverResultLauncher?.launch(intent)
+            smsRetrieverResultLauncher?.run {
+                hideKeyboard()
+                launch(intent)
+            }
         }
     }
 
     private val activityResultCallback = ActivityResultCallback<String?> { smsContent ->
         val view = this@SmsConfirmationView
         smsContent?.takeIf { it.isBlank().not() }
-            ?.let { SmsParser.parseOneTimeCode(it, view.codeLength) }
-            ?.let { view.enteredCode = it }
+            ?.let { sms ->
+                view.enteredCode = SmsParser.parseOneTimeCode(sms, view.codeLength).orEmpty()
+            }
     }
 
     private var smsRetrieverResultLauncher: ActivityResultLauncher<Intent>? = null
