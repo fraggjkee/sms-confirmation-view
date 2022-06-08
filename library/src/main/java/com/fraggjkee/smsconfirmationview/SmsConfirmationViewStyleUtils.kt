@@ -1,7 +1,10 @@
 package com.fraggjkee.smsconfirmationview
 
 import android.content.Context
+import android.graphics.Typeface
+import android.os.Build
 import android.util.AttributeSet
+import androidx.core.content.res.ResourcesCompat
 
 internal object SmsConfirmationViewStyleUtils {
 
@@ -95,6 +98,18 @@ internal object SmsConfirmationViewStyleUtils {
                 SmsConfirmationView.SmsDetectionMode.AUTO.ordinal
             ).let { SmsConfirmationView.SmsDetectionMode.values()[it] }
 
+
+            val symbolTextFont = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                getFont(R.styleable.SmsConfirmationView_scv_symbolTextFont)
+                    ?: Typeface.DEFAULT_BOLD
+            } else {
+                val resId = getResourceId(R.styleable.SmsConfirmationView_scv_symbolTextFont, -1)
+                if (resId == -1) {
+                    Typeface.DEFAULT_BOLD
+                } else {
+                    ResourcesCompat.getFont(context, resId) ?: Typeface.DEFAULT_BOLD
+                }
+            }
             recycle()
 
             SmsConfirmationView.Style(
@@ -110,7 +125,8 @@ internal object SmsConfirmationViewStyleUtils {
                     borderWidth = symbolBorderWidth,
                     borderCornerRadius = cornerRadius,
                     textColor = symbolTextColor,
-                    textSize = symbolTextSize
+                    textSize = symbolTextSize,
+                    typeface = symbolTextFont
                 ),
                 smsDetectionMode = smsDetectionMode
             )
