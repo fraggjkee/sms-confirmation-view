@@ -183,6 +183,7 @@ internal class SymbolView(context: Context, private val symbolStyle: Style) : Vi
         @Px val borderWidth: Int,
         val borderCornerRadius: Float,
         @ColorInt val textColor: Int,
-        @Px val textSize: Int
+        @Px val textSize: Int,
+        val typeface: Typeface = Typeface.DEFAULT_BOLD
     )
 }

@@ -19,6 +19,7 @@
             <enum name="auto" value="1" />
             <enum name="manual" value="2" />
         </attr>
+        <attr name="scv_symbolTextFont" format="reference"/>
     </declare-styleable>
 
 </resources>

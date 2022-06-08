@@ -59,6 +59,7 @@ Here's the list of available XML attributes:
 - `scv_symbolHeight`: height of each individual symbol cell. Default value = [48dp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L7)
 - `scv_symbolTextColor`: text color used to draw text within symbol subviews. Default value = `?attr/colorOnSurface` or `Color.BLACK` if such attribute is not defined in your app's theme.
 - `scv_symbolTextSize`: text size used within symbol subviews. Default value = [22sp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L8)
+- `scv_symbolTextFont`: text font used within symbol subviews. Default value = theme default font
 - `scv_symbolBackgroundColor`: filler color for symbol subviews. Default value = `?attr/colorSurface` or `Color.BLACK` if such attribute is not defined in your app's theme.
 - `scv_symbolBorderColor`: color to use for symbol subview's stroke outline. Default value = `?attr/colorSurface` or `Color.BLACK` if such attribute is not defined in your app's theme.
 - `scv_symbolBorderActiveColor`: color to use for symbol subview's stroke outline for an active symbol. Default value = `scv_symbolBorderColor`.
