@@ -11,7 +11,7 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.Px
 
-private const val textPaintAlphaAnimDuration = 100L
+private const val textPaintAlphaAnimDuration = 150L
 private const val borderPaintAlphaAnimDuration = 200L
 
 private const val cursorAlphaAnimDuration = 500L

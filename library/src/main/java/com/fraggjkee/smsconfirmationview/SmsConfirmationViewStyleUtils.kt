@@ -110,6 +110,7 @@ internal object SmsConfirmationViewStyleUtils {
                     ResourcesCompat.getFont(context, resId) ?: Typeface.DEFAULT_BOLD
                 }
             }
+
             recycle()
 
             SmsConfirmationView.Style(

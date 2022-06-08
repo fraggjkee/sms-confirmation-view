@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.fraggjkee.smsconfirmationview
 
 /**
@@ -25,7 +27,7 @@ var SmsConfirmationView.symbolsSpacing: Int
 var SmsConfirmationView.showCursor: Boolean
     set(value) {
         val updatedStyle = style.symbolViewStyle.copy(
-            showCursor = showCursor
+            showCursor = value
         )
         this.style = style.copy(symbolViewStyle = updatedStyle)
     }

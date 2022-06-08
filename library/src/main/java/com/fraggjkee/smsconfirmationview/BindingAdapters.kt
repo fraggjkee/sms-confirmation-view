@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.fraggjkee.smsconfirmationview
 
 import androidx.databinding.BindingAdapter
