@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.BaseInputConnection
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
+import android.view.inputmethod.InputConnectionWrapper
 import android.widget.LinearLayout
 import android.widget.Space
 import androidx.activity.result.ActivityResultCallback
@@ -216,8 +217,17 @@ class SmsConfirmationView @JvmOverloads constructor(
             inputType = InputType.TYPE_CLASS_NUMBER
             imeOptions = EditorInfo.IME_ACTION_DONE
         }
-
-        return BaseInputConnection(this, false)
+        val publicCon: InputConnectionWrapper = object : InputConnectionWrapper(
+            BaseInputConnection(this, false), true
+        ) {
+            override fun deleteSurroundingText(beforeLength: Int, afterLength: Int): Boolean {
+                return if (beforeLength == 1 && afterLength == 0) {
+                    (sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
+                            && sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL)))
+                } else super.deleteSurroundingText(beforeLength, afterLength)
+            }
+        }
+        return publicCon
     }
 
     override fun onDetachedFromWindow() {
