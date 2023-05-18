@@ -115,7 +115,6 @@ class SmsConfirmationView @JvmOverloads constructor(
     // Used to inflate and return the popup paste menu
     private fun initPasteMenu() : PopupMenu {
         val clipboard = getSystemService(context, ClipboardManager::class.java)
-        var pasteData = ""
         val pasteMenu = PopupMenu(this.context, this).apply {
             inflate(R.menu.popup_menu_paste)
             setOnMenuItemClickListener { menuItem ->
@@ -127,7 +126,7 @@ class SmsConfirmationView @JvmOverloads constructor(
                         val item = clipboard?.primaryClip?.getItemAt(0)
 
                         // Get the clipboard item text.
-                        pasteData = item?.text?.toString() ?: ""
+                        val pasteData = item?.text?.toString() ?: ""
 
                         // Paste the text into the component
                         appendPaste(pasteData)
