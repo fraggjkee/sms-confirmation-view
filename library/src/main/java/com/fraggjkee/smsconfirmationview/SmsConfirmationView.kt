@@ -162,7 +162,16 @@ class SmsConfirmationView @JvmOverloads constructor(
         }
     }
 
+    // TODO (BA, 5/18/23): `ACTION_MULTIPLE`/`event.characters` deprecated
+    //  in API 29 noting "No longer used by the input system", though still working on API 33
+    //  and without alternatives from Google.
+    @Suppress("DEPRECATION")
     private fun handleKeyEvent(keyCode: Int, event: KeyEvent): Boolean = when {
+        event.action == KeyEvent.ACTION_MULTIPLE && event.keyCode == KeyEvent.KEYCODE_UNKNOWN && allowCodePaste -> {
+            val pastedInput = event.characters
+            appendPaste(pastedInput)
+            true
+        }
         event.action != KeyEvent.ACTION_DOWN -> false
         event.isDigitKey() -> {
             val enteredSymbol = event.keyCharacterMap.getNumber(keyCode)
@@ -190,6 +199,13 @@ class SmsConfirmationView @JvmOverloads constructor(
         }
 
         this.enteredCode = enteredCode + symbol
+    }
+
+    private fun appendPaste(pastedInput: String) {
+        pastedInput.forEach { char ->
+            // Piggy-back onto `appendSymbol`
+            appendSymbol(char)
+        }
     }
 
     private fun removeLastSymbol() {
