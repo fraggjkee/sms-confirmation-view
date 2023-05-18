@@ -52,7 +52,7 @@ internal object SmsConfirmationViewStyleUtils {
             )
             val allowCodePaste: Boolean = getBoolean(
                 R.styleable.SmsConfirmationView_scv_allowCodePaste,
-                defaultSymbolStyle.showCursor
+                defaultStyle.allowCodePaste
             )
             val symbolWidth: Int = getDimensionPixelSize(
                 R.styleable.SmsConfirmationView_scv_symbolWidth,
