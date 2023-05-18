@@ -2,6 +2,7 @@ package com.fraggjkee.smsconfirmationview
 
 import android.annotation.SuppressLint
 import android.content.*
+import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
 import android.os.Parcel
 import android.os.Parcelable
 import android.text.InputType
@@ -14,9 +15,11 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.view.inputmethod.InputConnectionWrapper
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.Space
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.children
 import androidx.core.view.postDelayed
 import androidx.fragment.app.Fragment
@@ -90,6 +93,15 @@ class SmsConfirmationView @JvmOverloads constructor(
             else SmsConfirmationViewStyleUtils.getFromAttributes(attrs, context)
         updateState()
 
+        // Conditionally allow pasting with long-press to the component
+        if (allowCodePaste) {
+            this.rootView.setOnLongClickListener {
+                val pasteMenu = initPasteMenu()
+                pasteMenu.show()
+                true
+            }
+        }
+
         if (smsDetectionMode != SmsDetectionMode.DISABLED) {
             // Registering here results in attaching to a parent Activity. We'll do
             // one more attempt from onAttachedToWindow to recheck if actual parent is a
@@ -98,6 +110,56 @@ class SmsConfirmationView @JvmOverloads constructor(
                 ?.takeIf { it.lifecycle.currentState < Lifecycle.State.STARTED }
                 ?.registerForActivityResult(SmsRetrieverContract(), activityResultCallback)
         }
+    }
+
+    // Used to inflate and return the popup paste menu
+    private fun initPasteMenu() : PopupMenu {
+        val clipboard = getSystemService(context, ClipboardManager::class.java)
+        var pasteData = ""
+        val pasteMenu = PopupMenu(this.context, this).apply {
+            inflate(R.menu.popup_menu_paste)
+            setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.menu_item_paste -> {
+                        // Examines the item on the clipboard. If getText() doesn't return null,
+                        // the clip item contains the text. Assumes that this application can only
+                        // handle one item at a time.
+                        val item = clipboard?.primaryClip?.getItemAt(0)
+
+                        // Get the clipboard item text.
+                        pasteData = item?.text?.toString() ?: ""
+
+                        // Paste the text into the component
+                        appendPaste(pasteData)
+
+                        // Return true/false
+                        pasteData.isBlank()
+                    }
+                    else -> { false }
+                }
+            }
+        }
+
+        // Get the ID of the "paste" menu item.
+        val pasteItem = pasteMenu.menu.findItem(R.id.menu_item_paste)
+
+        // If the clipboard doesn't contain data, disable the paste menu item.
+        // If it does contain data, decide whether you can handle the data.
+        pasteItem.isEnabled = when {
+            clipboard == null || clipboard.primaryClipDescription == null -> false
+            !clipboard.hasPrimaryClip() -> false
+            !clipboard.primaryClipDescription!!.hasMimeType(MIMETYPE_TEXT_PLAIN) -> {
+                // Disable the paste menu item, since the clipboard has data but it
+                // isn't plain text.
+                false
+            }
+            else -> {
+                // Enable the paste menu item, since the clipboard contains plain text.
+                true
+            }
+        }
+
+        return pasteMenu
     }
 
     private fun updateState() {
@@ -218,7 +280,8 @@ class SmsConfirmationView @JvmOverloads constructor(
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (event.action == MotionEvent.ACTION_DOWN && requestFocus()) {
+        if (event.action == MotionEvent.ACTION_DOWN && !this.isFocused) {
+            requestFocus()
             showKeyboard()
             return true
         }
