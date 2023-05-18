@@ -65,6 +65,7 @@ Here's the list of available XML attributes:
 - `scv_symbolBorderActiveColor`: color to use for symbol subview's stroke outline for an active symbol. Default value = `scv_symbolBorderColor`.
 - `scv_symbolBorderWidth`: thickness of the stroke used to draw symbol subview's border. Default value = [2dp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L9)
 - `scv_symbolBorderCornerRadius`: corner radius for symbol subview's border. Default value = [2dp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L5)
+- `scv_allowCodePaste`: corner radius for symbol subview's border. Default value = `true`.
 
 All of these attributes can also be changed **programatically** (XML customization is the preferred way though), check out the list of available extensions [here](https://github.com/fraggjkee/SmsConfirmationView/blob/master/library/src/main/java/com/fraggjkee/smsconfirmationview/SmsConfirmationViewExt.kt).
 

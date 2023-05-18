@@ -140,3 +140,12 @@ var SmsConfirmationView.symbolBorderCornerRadius: Float
         this.style = style.copy(symbolViewStyle = updatedStyle)
     }
     get() = style.symbolViewStyle.borderCornerRadius
+
+/**
+ * @see R.styleable.SmsConfirmationView_scv_allowCodePaste
+ */
+var SmsConfirmationView.allowCodePaste: Boolean
+    set(value) {
+        this.style = style.copy(allowCodePaste = value)
+    }
+    get() = style.allowCodePaste

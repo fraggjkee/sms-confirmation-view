@@ -20,6 +20,7 @@
             <enum name="manual" value="2" />
         </attr>
         <attr name="scv_symbolTextFont" format="reference"/>
+        <attr name="scv_allowCodePaste" format="boolean"/>
     </declare-styleable>
 
 </resources>

@@ -307,7 +307,8 @@ class SmsConfirmationView @JvmOverloads constructor(
         val codeLength: Int,
         val symbolsSpacing: Int,
         val symbolViewStyle: SymbolView.Style,
-        val smsDetectionMode: SmsDetectionMode = SmsDetectionMode.AUTO
+        val smsDetectionMode: SmsDetectionMode = SmsDetectionMode.AUTO,
+        val allowCodePaste: Boolean
     )
 
     internal enum class SmsDetectionMode {
