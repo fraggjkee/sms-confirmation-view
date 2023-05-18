@@ -203,7 +203,7 @@ class SmsConfirmationView @JvmOverloads constructor(
 
     private fun appendPaste(pastedInput: String) {
         pastedInput.forEach { char ->
-            // Piggy-back onto `appendSymbol`
+            // Piggy-back onto `appendSymbol` as it guards code length
             appendSymbol(char)
         }
     }
