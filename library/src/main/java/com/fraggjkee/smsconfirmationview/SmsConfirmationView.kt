@@ -96,9 +96,17 @@ class SmsConfirmationView @JvmOverloads constructor(
         // Conditionally allow pasting with long-press to the component
         if (allowCodePaste) {
             this.rootView.setOnLongClickListener {
-                val pasteMenu = initPasteMenu()
-                pasteMenu.show()
-                true
+                when (val pasteMenu = initPasteMenu()) {
+                    null -> {
+                        // No paste menu was created
+                        false
+                    }
+                    else -> {
+                        // Paste menu was created
+                        pasteMenu.show()
+                        true
+                    }
+                }
             }
         }
 
@@ -113,9 +121,20 @@ class SmsConfirmationView @JvmOverloads constructor(
     }
 
     // Used to inflate and return the popup paste menu
-    private fun initPasteMenu() : PopupMenu {
+    private fun initPasteMenu() : PopupMenu? {
         val clipboard = getSystemService(context, ClipboardManager::class.java)
-        val pasteMenu = PopupMenu(this.context, this).apply {
+
+        if (
+            clipboard == null ||
+            clipboard.primaryClipDescription == null ||
+            !clipboard.hasPrimaryClip() ||
+            !clipboard.primaryClipDescription!!.hasMimeType(MIMETYPE_TEXT_PLAIN) // Has data, not plain-text
+        ) {
+            // If conditions not met, there's nothing to paste, don't show paste menu
+            return null
+        }
+
+        return PopupMenu(context, this).apply {
             inflate(R.menu.popup_menu_paste)
             setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
@@ -123,13 +142,13 @@ class SmsConfirmationView @JvmOverloads constructor(
                         // Examines the item on the clipboard. If getText() doesn't return null,
                         // the clip item contains the text. Assumes that this application can only
                         // handle one item at a time.
-                        val item = clipboard?.primaryClip?.getItemAt(0)
+                        val item = clipboard.primaryClip?.getItemAt(0)
 
                         // Get the clipboard item text.
-                        val pasteData = item?.text?.toString() ?: ""
+                        val pasteData = item?.text ?: ""
 
                         // Paste the text into the component
-                        appendPaste(pasteData)
+                        applyPaste(pasteData)
 
                         // Return true/false
                         pasteData.isBlank()
@@ -138,27 +157,6 @@ class SmsConfirmationView @JvmOverloads constructor(
                 }
             }
         }
-
-        // Get the ID of the "paste" menu item.
-        val pasteItem = pasteMenu.menu.findItem(R.id.menu_item_paste)
-
-        // If the clipboard doesn't contain data, disable the paste menu item.
-        // If it does contain data, decide whether you can handle the data.
-        pasteItem.isEnabled = when {
-            clipboard == null || clipboard.primaryClipDescription == null -> false
-            !clipboard.hasPrimaryClip() -> false
-            !clipboard.primaryClipDescription!!.hasMimeType(MIMETYPE_TEXT_PLAIN) -> {
-                // Disable the paste menu item, since the clipboard has data but it
-                // isn't plain text.
-                false
-            }
-            else -> {
-                // Enable the paste menu item, since the clipboard contains plain text.
-                true
-            }
-        }
-
-        return pasteMenu
     }
 
     private fun updateState() {
@@ -230,7 +228,7 @@ class SmsConfirmationView @JvmOverloads constructor(
     private fun handleKeyEvent(keyCode: Int, event: KeyEvent): Boolean = when {
         event.action == KeyEvent.ACTION_MULTIPLE && event.keyCode == KeyEvent.KEYCODE_UNKNOWN && allowCodePaste -> {
             val pastedInput = event.characters
-            appendPaste(pastedInput)
+            applyPaste(pastedInput)
             true
         }
         event.action != KeyEvent.ACTION_DOWN -> false
@@ -262,11 +260,18 @@ class SmsConfirmationView @JvmOverloads constructor(
         this.enteredCode = enteredCode + symbol
     }
 
-    private fun appendPaste(pastedInput: String) {
-        pastedInput.forEach { char ->
-            // Piggy-back onto `appendSymbol` as it guards code length
-            appendSymbol(char)
+    private fun applyPaste(pastedInput: CharSequence) {
+        // Only accept digits to be pasted
+        var digitsPasted = pastedInput.filter { it.isDigit() }
+
+        if (enteredCode.length + digitsPasted.length > codeLength) {
+            // Ensure the pasted length does not exceed our maximum length
+            // Subsequence the end of `digitsPasted` to get the digits that do not exceed
+            digitsPasted = digitsPasted.subSequence(0, digitsPasted.length - enteredCode.length)
         }
+
+        // Set the code
+        this.enteredCode = enteredCode + digitsPasted
     }
 
     private fun removeLastSymbol() {
@@ -279,7 +284,7 @@ class SmsConfirmationView @JvmOverloads constructor(
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (event.action == MotionEvent.ACTION_DOWN && !this.isFocused) {
+        if (event.action == MotionEvent.ACTION_DOWN && !this.isKeyboardOpen()) {
             requestFocus()
             showKeyboard()
             return true
