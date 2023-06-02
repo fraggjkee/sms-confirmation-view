@@ -2,6 +2,7 @@ package com.fraggjkee.smsconfirmationview
 
 import android.annotation.SuppressLint
 import android.content.*
+import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
 import android.os.Parcel
 import android.os.Parcelable
 import android.text.InputType
@@ -14,9 +15,11 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.view.inputmethod.InputConnectionWrapper
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.Space
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.children
 import androidx.core.view.postDelayed
 import androidx.fragment.app.Fragment
@@ -90,6 +93,23 @@ class SmsConfirmationView @JvmOverloads constructor(
             else SmsConfirmationViewStyleUtils.getFromAttributes(attrs, context)
         updateState()
 
+        // Conditionally allow pasting with long-press to the component
+        if (allowCodePaste) {
+            this.rootView.setOnLongClickListener {
+                when (val pasteMenu = initPasteMenu()) {
+                    null -> {
+                        // No paste menu was created
+                        false
+                    }
+                    else -> {
+                        // Paste menu was created
+                        pasteMenu.show()
+                        true
+                    }
+                }
+            }
+        }
+
         if (smsDetectionMode != SmsDetectionMode.DISABLED) {
             // Registering here results in attaching to a parent Activity. We'll do
             // one more attempt from onAttachedToWindow to recheck if actual parent is a
@@ -97,6 +117,45 @@ class SmsConfirmationView @JvmOverloads constructor(
             smsRetrieverResultLauncher = getActivity()
                 ?.takeIf { it.lifecycle.currentState < Lifecycle.State.STARTED }
                 ?.registerForActivityResult(SmsRetrieverContract(), activityResultCallback)
+        }
+    }
+
+    // Used to inflate and return the popup paste menu
+    private fun initPasteMenu() : PopupMenu? {
+        val clipboard = getSystemService(context, ClipboardManager::class.java)
+
+        if (
+            clipboard == null ||
+            clipboard.primaryClipDescription == null ||
+            !clipboard.hasPrimaryClip() ||
+            !clipboard.primaryClipDescription!!.hasMimeType(MIMETYPE_TEXT_PLAIN) // Has data, not plain-text
+        ) {
+            // If conditions not met, there's nothing to paste, don't show paste menu
+            return null
+        }
+
+        return PopupMenu(context, this).apply {
+            inflate(R.menu.popup_menu_paste)
+            setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.menu_item_paste -> {
+                        // Examines the item on the clipboard. If getText() doesn't return null,
+                        // the clip item contains the text. Assumes that this application can only
+                        // handle one item at a time.
+                        val item = clipboard.primaryClip?.getItemAt(0)
+
+                        // Get the clipboard item text.
+                        val pasteData = item?.text ?: ""
+
+                        // Paste the text into the component
+                        applyPaste(pasteData)
+
+                        // Return true/false
+                        pasteData.isBlank()
+                    }
+                    else -> { false }
+                }
+            }
         }
     }
 
@@ -162,7 +221,16 @@ class SmsConfirmationView @JvmOverloads constructor(
         }
     }
 
+    // TODO (BA, 5/18/23): `ACTION_MULTIPLE`/`event.characters` deprecated
+    //  in API 29 noting "No longer used by the input system", though still working on API 33
+    //  and without alternatives from Google.
+    @Suppress("DEPRECATION")
     private fun handleKeyEvent(keyCode: Int, event: KeyEvent): Boolean = when {
+        event.action == KeyEvent.ACTION_MULTIPLE && event.keyCode == KeyEvent.KEYCODE_UNKNOWN && allowCodePaste -> {
+            val pastedInput = event.characters
+            applyPaste(pastedInput)
+            true
+        }
         event.action != KeyEvent.ACTION_DOWN -> false
         event.isDigitKey() -> {
             val enteredSymbol = event.keyCharacterMap.getNumber(keyCode)
@@ -192,6 +260,20 @@ class SmsConfirmationView @JvmOverloads constructor(
         this.enteredCode = enteredCode + symbol
     }
 
+    private fun applyPaste(pastedInput: CharSequence) {
+        // Only accept digits to be pasted
+        var digitsPasted = pastedInput.filter { it.isDigit() }
+
+        if (enteredCode.length + digitsPasted.length > codeLength) {
+            // Ensure the pasted length does not exceed our maximum length
+            // Subsequence the end of `digitsPasted` to get the digits that do not exceed
+            digitsPasted = digitsPasted.subSequence(0, digitsPasted.length - enteredCode.length)
+        }
+
+        // Set the code
+        this.enteredCode = enteredCode + digitsPasted
+    }
+
     private fun removeLastSymbol() {
         if (enteredCode.isEmpty()) {
             return
@@ -202,7 +284,8 @@ class SmsConfirmationView @JvmOverloads constructor(
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (event.action == MotionEvent.ACTION_DOWN && requestFocus()) {
+        if (event.action == MotionEvent.ACTION_DOWN && !this.isKeyboardOpen()) {
+            requestFocus()
             showKeyboard()
             return true
         }
@@ -307,7 +390,8 @@ class SmsConfirmationView @JvmOverloads constructor(
         val codeLength: Int,
         val symbolsSpacing: Int,
         val symbolViewStyle: SymbolView.Style,
-        val smsDetectionMode: SmsDetectionMode = SmsDetectionMode.AUTO
+        val smsDetectionMode: SmsDetectionMode = SmsDetectionMode.AUTO,
+        val allowCodePaste: Boolean
     )
 
     internal enum class SmsDetectionMode {

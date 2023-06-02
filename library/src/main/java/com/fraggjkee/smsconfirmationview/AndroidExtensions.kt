@@ -8,6 +8,8 @@ import android.view.inputmethod.InputMethodManager
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.color.MaterialColors
 
 @ColorInt
@@ -17,7 +19,12 @@ internal fun Context.getThemeColor(@AttrRes attrRes: Int): Int {
 
 internal fun View.showKeyboard() {
     val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.showSoftInput(this, InputMethodManager.SHOW_FORCED)
+    imm.showSoftInput(this, 0)
+}
+
+internal fun View.isKeyboardOpen(): Boolean {
+    return ViewCompat.getRootWindowInsets(this)
+        ?.isVisible(WindowInsetsCompat.Type.ime()) ?: false
 }
 
 internal fun View.hideKeyboard() {
