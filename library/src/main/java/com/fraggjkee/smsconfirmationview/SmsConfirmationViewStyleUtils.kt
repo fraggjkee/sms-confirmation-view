@@ -17,6 +17,8 @@ internal object SmsConfirmationViewStyleUtils {
                 showCursor = true,
                 width = resources.getDimensionPixelSize(R.dimen.symbol_view_width),
                 height = resources.getDimensionPixelSize(R.dimen.symbol_view_height),
+                filledBorderColor = context.getThemeColor(R.attr.colorSurface),
+                filledBackgroundColor = context.getThemeColor(R.attr.colorSurface),
                 backgroundColor = context.getThemeColor(R.attr.colorSurface),
                 borderColor = context.getThemeColor(R.attr.colorPrimary),
                 borderColorActive = context.getThemeColor(R.attr.colorPrimary),
@@ -60,6 +62,14 @@ internal object SmsConfirmationViewStyleUtils {
             val symbolBackgroundColor: Int = getColor(
                 R.styleable.SmsConfirmationView_scv_symbolBackgroundColor,
                 defaultSymbolStyle.backgroundColor
+            )
+            val symbolFilledBackgroundColor: Int = getColor(
+                R.styleable.SmsConfirmationView_scv_symbolFilledBackgroundColor,
+                defaultSymbolStyle.backgroundColor
+            )
+            val symbolFilledBorderColor: Int = getColor(
+                R.styleable.SmsConfirmationView_scv_symbolFilledBorderColor,
+                defaultSymbolStyle.borderColor
             )
             val symbolBorderColor: Int = getColor(
                 R.styleable.SmsConfirmationView_scv_symbolBorderColor,
@@ -121,6 +131,8 @@ internal object SmsConfirmationViewStyleUtils {
                     width = symbolWidth,
                     height = symbolHeight,
                     backgroundColor = symbolBackgroundColor,
+                    filledBorderColor = symbolFilledBorderColor,
+                    filledBackgroundColor = symbolFilledBackgroundColor,
                     borderColor = symbolBorderColor,
                     borderColorActive = symbolBorderActiveColor,
                     borderWidth = symbolBorderWidth,

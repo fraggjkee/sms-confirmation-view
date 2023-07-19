@@ -111,28 +111,53 @@ internal class SymbolView(context: Context, private val symbolStyle: Style) : Vi
         }
 
         textAnimator?.start()
-        animateBorderColorChange(isActive)
+        val isFilled = symbol != null
+        backgroundColorChange(isFilled)
+        borderColorChange(isFilled,isActive)
     }
 
-    private fun animateBorderColorChange(isActive: Boolean) {
+    private fun borderColorChange(isFilled: Boolean,isActive: Boolean) {
         val borderColor = symbolStyle.borderColor
-        val borderColorActive = symbolStyle.borderColorActive
-        if (borderColor == borderColorActive) {
+        val borderColorFilled = symbolStyle.filledBorderColor
+
+        if (borderColor == borderColorFilled) {
             return
+        }
+
+        if (isFilled) {
+            borderPaint.color = borderColorFilled
+        } else {
+            borderPaint.color = borderColor
         }
 
         val colorFrom =
             if (isActive) borderColor
-            else borderColorActive
+            else if (!isFilled) borderColor
+            else borderColorFilled
         val colorTo =
-            if (isActive) borderColorActive
-            else borderColor
+            if (isActive) borderColor
+            else if (!isFilled) borderColor
+            else borderColorFilled
         ObjectAnimator.ofObject(borderPaint, "color", ArgbEvaluator(), colorFrom, colorTo)
             .apply {
                 duration = borderPaintAlphaAnimDuration
                 addUpdateListener { invalidate() }
             }
             .start()
+
+    }
+
+    private fun backgroundColorChange(isFilled: Boolean) {
+        val backgroundColor = symbolStyle.backgroundColor
+        val backgroundColorFilled = symbolStyle.filledBackgroundColor
+
+        if (isFilled) {
+            backgroundPaint.color = backgroundColorFilled
+        } else {
+            backgroundPaint.color = backgroundColor
+        }
+
+        invalidate()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -180,6 +205,8 @@ internal class SymbolView(context: Context, private val symbolStyle: Style) : Vi
         @ColorInt val backgroundColor: Int,
         @ColorInt val borderColor: Int,
         @ColorInt val borderColorActive: Int,
+        @ColorInt val filledBackgroundColor:Int,
+        @ColorInt val filledBorderColor:Int,
         @Px val borderWidth: Int,
         val borderCornerRadius: Float,
         @ColorInt val textColor: Int,

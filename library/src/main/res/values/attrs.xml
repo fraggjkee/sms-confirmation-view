@@ -8,6 +8,8 @@
         <attr name="scv_symbolTextColor" format="color" />
         <attr name="scv_symbolTextSize" format="dimension" />
         <attr name="scv_symbolBackgroundColor" format="color" />
+        <attr name="scv_symbolFilledBackgroundColor" format="color" />
+        <attr name="scv_symbolFilledBorderColor" format="color" />
         <attr name="scv_symbolBorderColor" format="color" />
         <attr name="scv_symbolBorderActiveColor" format="color" />
         <attr name="scv_symbolBorderWidth" format="dimension" />
