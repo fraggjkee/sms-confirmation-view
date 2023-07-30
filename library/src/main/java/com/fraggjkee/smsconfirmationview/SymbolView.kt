@@ -5,14 +5,18 @@ import android.animation.ArgbEvaluator
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Rect
+import android.graphics.RectF
+import android.graphics.Typeface
 import android.util.Size
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.Px
 
-private const val textPaintAlphaAnimDuration = 150L
-private const val borderPaintAlphaAnimDuration = 200L
+private const val textPaintAlphaAnimDuration = 25L
+private const val borderPaintAlphaAnimDuration = 150L
 
 private const val cursorAlphaAnimDuration = 500L
 private const val cursorAlphaAnimStartDelay = 200L
@@ -34,51 +38,35 @@ internal class SymbolView(context: Context, private val symbolStyle: Style) : Vi
             updateState(state)
         }
 
-    private val showCursor: Boolean get() = symbolStyle.showCursor
+    private val showCursor: Boolean = symbolStyle.showCursor
+    private val desiredW: Int = symbolStyle.width
+    private val desiredH: Int = symbolStyle.height
+    private val textSizePx: Int = symbolStyle.textSize
+    private val cornerRadius: Float = symbolStyle.borderCornerRadius
 
-    private val desiredW: Int
-    private val desiredH: Int
-    private val textSizePx: Int
-    private val cornerRadius: Float
+    private val backgroundPaint: Paint = Paint().apply {
+        color = symbolStyle.backgroundColor
+        style = Paint.Style.FILL
+    }
+    private val borderPaint: Paint = Paint().apply {
+        isAntiAlias = true
+        color = symbolStyle.borderColor
+        style = Paint.Style.STROKE
+        strokeWidth = symbolStyle.borderWidth.toFloat()
+    }
+    private val textPaint: Paint = Paint().apply {
+        isAntiAlias = true
+        color = symbolStyle.textColor
+        textSize = textSizePx.toFloat()
+        typeface = Typeface.DEFAULT_BOLD
+        textAlign = Paint.Align.CENTER
+    }
+
+    private var textSize: Size = calculateTextSize('0')
 
     private val backgroundRect = RectF()
 
-    private val backgroundPaint: Paint
-    private val borderPaint: Paint
-    private val textPaint: Paint
-
-    private var textSize: Size
-
     private var textAnimator: Animator? = null
-
-    init {
-        desiredW = symbolStyle.width
-        desiredH = symbolStyle.height
-        textSizePx = symbolStyle.textSize
-        cornerRadius = symbolStyle.borderCornerRadius
-
-        backgroundPaint = Paint().apply {
-            this.color = symbolStyle.backgroundColor
-            this.style = Paint.Style.FILL
-        }
-
-        borderPaint = Paint().apply {
-            this.isAntiAlias = true
-            this.color = symbolStyle.borderColor
-            this.style = Paint.Style.STROKE
-            this.strokeWidth = symbolStyle.borderWidth.toFloat()
-        }
-
-        textPaint = Paint().apply {
-            this.isAntiAlias = true
-            this.color = symbolStyle.textColor
-            this.textSize = textSizePx.toFloat()
-            this.typeface = Typeface.DEFAULT_BOLD
-            this.textAlign = Paint.Align.CENTER
-        }
-
-        textSize = calculateTextSize('0')
-    }
 
     @Suppress("SameParameterValue")
     private fun calculateTextSize(symbol: Char): Size {
