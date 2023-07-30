@@ -1,5 +1,6 @@
 package com.fraggjkee.smsconfirmationview
 
+import android.content.ClipDescription.MIMETYPE_TEXT_HTML
 import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
 import android.content.ClipboardManager
 import android.content.Context
@@ -37,8 +38,15 @@ internal class ActionModeCallback(
 }
 
 private val ClipboardManager.hasTextClip: Boolean
-    get() = hasPrimaryClip() &&
-        primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN) == true
+    get() {
+        val primaryClipDescription = primaryClipDescription
+        return if (hasPrimaryClip().not() || primaryClipDescription == null) {
+            false
+        } else {
+            primaryClipDescription.hasMimeType(MIMETYPE_TEXT_PLAIN) ||
+                primaryClipDescription.hasMimeType(MIMETYPE_TEXT_HTML)
+        }
+    }
 
 private val ClipboardManager.plainTextClip: String?
     get() =
