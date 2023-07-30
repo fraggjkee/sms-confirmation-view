@@ -1,7 +1,10 @@
 package com.fraggjkee.smsconfirmationview
 
 import android.annotation.SuppressLint
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Parcel
 import android.os.Parcelable
 import android.text.InputType
