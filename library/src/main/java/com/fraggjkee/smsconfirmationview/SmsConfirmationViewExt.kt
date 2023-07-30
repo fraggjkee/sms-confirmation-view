@@ -34,6 +34,15 @@ var SmsConfirmationView.showCursor: Boolean
     get() = style.symbolViewStyle.showCursor
 
 /**
+ * @see R.styleable.SmsConfirmationView_scv_pasteEnabled
+ */
+var SmsConfirmationView.isPasteEnabled: Boolean
+    set(value) {
+        this.style = style.copy(isPasteEnabled = value)
+    }
+    get() = style.isPasteEnabled
+
+/**
  * @see R.styleable.SmsConfirmationView_scv_symbolWidth
  */
 var SmsConfirmationView.symbolWidth: Int
