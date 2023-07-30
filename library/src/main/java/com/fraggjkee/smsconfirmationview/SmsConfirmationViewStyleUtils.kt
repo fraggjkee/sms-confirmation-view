@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import android.os.Build
 import android.util.AttributeSet
 import androidx.core.content.res.ResourcesCompat
+import com.google.android.material.R as MaterialR
 
 internal object SmsConfirmationViewStyleUtils {
 
@@ -17,12 +18,12 @@ internal object SmsConfirmationViewStyleUtils {
                 showCursor = true,
                 width = resources.getDimensionPixelSize(R.dimen.symbol_view_width),
                 height = resources.getDimensionPixelSize(R.dimen.symbol_view_height),
-                backgroundColor = context.getThemeColor(R.attr.colorSurface),
-                borderColor = context.getThemeColor(R.attr.colorPrimary),
-                borderColorActive = context.getThemeColor(R.attr.colorPrimary),
+                backgroundColor = context.getThemeColor(com.google.android.material.R.attr.colorSurface),
+                borderColor = context.getThemeColor(MaterialR.attr.colorPrimary),
+                borderColorActive = context.getThemeColor(MaterialR.attr.colorPrimary),
                 borderWidth = resources.getDimensionPixelSize(R.dimen.symbol_view_stroke_width),
                 borderCornerRadius = resources.getDimension(R.dimen.symbol_view_corner_radius),
-                textColor = context.getThemeColor(R.attr.colorOnSurface),
+                textColor = context.getThemeColor(MaterialR.attr.colorOnSurface),
                 textSize = resources.getDimensionPixelSize(R.dimen.symbol_view_text_size)
             )
             defaultStyle = SmsConfirmationView.Style(
