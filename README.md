@@ -21,7 +21,7 @@ allprojects {
 **Step 2.** Add the dependency
 ```gradle
 dependencies {
-    implementation "com.github.fraggjkee:sms-confirmation-view:1.7.4"
+    implementation "com.github.fraggjkee:sms-confirmation-view:1.8.0"
 }
 ```
 
@@ -54,6 +54,7 @@ Here's the list of available XML attributes:
 
 - `scv_codeLength`: expected confirmation code length. Default value = [4](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/java/com/fraggjkee/smsconfirmationview/SmsConfirmationView.kt#L186)
 - `scv_showCursor`: controls whether the blinking cursor should be displayed for an active symbol. Default value = `true`. Uses the color specified by `scv_symbolBorderActiveColor`.
+- `scv_pasteEnabled`: enables or disables Copy/Paste support. Default value = `true`. Default value = `true`.
 - `scv_symbolsSpacing`: gap between individual symbol subviews. Default value = [8dp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L4)
 - `scv_symbolWidth`: width of each individual symbol cell. Default value = [42dp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L6)
 - `scv_symbolHeight`: height of each individual symbol cell. Default value = [48dp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L7)

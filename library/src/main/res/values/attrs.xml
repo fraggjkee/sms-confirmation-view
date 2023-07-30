@@ -3,6 +3,7 @@
 
     <declare-styleable name="SmsConfirmationView">
         <attr name="scv_showCursor" format="boolean" />
+        <attr name="scv_pasteEnabled" format="boolean" />
         <attr name="scv_symbolWidth" format="dimension" />
         <attr name="scv_symbolHeight" format="dimension" />
         <attr name="scv_symbolTextColor" format="color" />
@@ -19,7 +20,7 @@
             <enum name="auto" value="1" />
             <enum name="manual" value="2" />
         </attr>
-        <attr name="scv_symbolTextFont" format="reference"/>
+        <attr name="scv_symbolTextFont" format="reference" />
     </declare-styleable>
 
 </resources>

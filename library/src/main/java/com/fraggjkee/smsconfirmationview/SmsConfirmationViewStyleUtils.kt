@@ -30,6 +30,7 @@ internal object SmsConfirmationViewStyleUtils {
                 codeLength = SmsConfirmationView.DEFAULT_CODE_LENGTH,
                 symbolsSpacing = resources.getDimensionPixelSize(R.dimen.symbols_spacing),
                 symbolViewStyle = symbolViewStyle,
+                isPasteEnabled = true
             )
         }
         return defaultStyle!!
@@ -49,6 +50,10 @@ internal object SmsConfirmationViewStyleUtils {
             val showCursor: Boolean = getBoolean(
                 R.styleable.SmsConfirmationView_scv_showCursor,
                 defaultSymbolStyle.showCursor
+            )
+            val isPasteEnabled: Boolean = getBoolean(
+                R.styleable.SmsConfirmationView_scv_pasteEnabled,
+                defaultStyle.isPasteEnabled
             )
             val symbolWidth: Int = getDimensionPixelSize(
                 R.styleable.SmsConfirmationView_scv_symbolWidth,
@@ -116,6 +121,7 @@ internal object SmsConfirmationViewStyleUtils {
 
             SmsConfirmationView.Style(
                 codeLength = codeLength,
+                isPasteEnabled = isPasteEnabled,
                 symbolsSpacing = symbolsSpacingPx,
                 symbolViewStyle = SymbolView.Style(
                     showCursor = showCursor,
