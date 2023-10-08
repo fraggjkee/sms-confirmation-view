@@ -1,8 +1,11 @@
 package com.fraggjkee.smsconfirmationview
 
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.IntentFilter
 import android.graphics.Color
+import android.os.Build
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.AttrRes
@@ -35,4 +38,28 @@ internal fun View.getActivity(): AppCompatActivity? {
         context = context.baseContext
     }
     return null
+}
+
+internal fun Context.registerReceiver(
+    receiver: BroadcastReceiver,
+    intentFilter: IntentFilter,
+    permission: String
+) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        @Suppress("UnspecifiedRegisterReceiverFlag")
+        registerReceiver(
+            receiver,
+            intentFilter,
+            permission,
+            null
+        )
+    } else {
+        registerReceiver(
+            receiver,
+            intentFilter,
+            permission,
+            null,
+            Context.RECEIVER_EXPORTED
+        )
+    }
 }

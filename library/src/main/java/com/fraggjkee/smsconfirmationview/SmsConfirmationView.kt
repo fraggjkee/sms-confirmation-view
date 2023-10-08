@@ -283,8 +283,7 @@ class SmsConfirmationView @JvmOverloads constructor(
         context.registerReceiver(
             smsBroadcastReceiver,
             IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION),
-            SmsRetriever.SEND_PERMISSION,
-            null
+            SmsRetriever.SEND_PERMISSION
         )
 
         SmsRetriever.getClient(context).startSmsUserConsent(null)

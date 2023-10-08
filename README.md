@@ -23,7 +23,7 @@ allprojects {
 **Step 2.** Add the dependency
 ```gradle
 dependencies {
-    implementation "com.github.fraggjkee:sms-confirmation-view:1.8.0"
+    implementation "com.github.fraggjkee:sms-confirmation-view:1.8.1"
 }
 ```
 
@@ -69,7 +69,7 @@ Here's the list of available XML attributes:
 - `scv_symbolBorderWidth`: thickness of the stroke used to draw symbol subview's border. Default value = [2dp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L9)
 - `scv_symbolBorderCornerRadius`: corner radius for symbol subview's border. Default value = [2dp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L5)
 
-All of these attributes can also be changed **programatically** (XML customization is the preferred way though), check out the list of available extensions [here](https://github.com/fraggjkee/SmsConfirmationView/blob/master/library/src/main/java/com/fraggjkee/smsconfirmationview/SmsConfirmationViewExt.kt).
+All of these attributes can also be changed **programmatically** (XML customization is the preferred way though), check out the list of available extensions [here](https://github.com/fraggjkee/SmsConfirmationView/blob/master/library/src/main/java/com/fraggjkee/smsconfirmationview/SmsConfirmationViewExt.kt).
 
 # SMS Detection modes
 - `app:scv_smsDetectionMode="disabled"`: Prevents the view from using SMS Consent API, i.e. this option simply disables automatic SMS detection.

@@ -6,12 +6,12 @@ apply plugin: 'maven-publish'
 android {
     namespace 'com.fraggjkee.smsconfirmationview'
 
-    compileSdk = 33
-    buildToolsVersion = "33.0.1"
+    compileSdk = 34
+    buildToolsVersion = "34.0.0"
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 33
+        targetSdkVersion 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
