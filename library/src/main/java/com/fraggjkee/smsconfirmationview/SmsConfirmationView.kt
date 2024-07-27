@@ -1,13 +1,16 @@
 package com.fraggjkee.smsconfirmationview
 
-import android.annotation.SuppressLint
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import android.text.InputType
 import android.util.AttributeSet
+import android.view.ActionMode
 import android.view.KeyEvent
-import android.view.MotionEvent
 import android.view.ViewGroup
 import android.view.inputmethod.BaseInputConnection
 import android.view.inputmethod.EditorInfo
@@ -34,17 +37,26 @@ class SmsConfirmationView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
+    /**
+     * Getter & setter for the entered code. For setter, only digits are accepted so non-digit
+     * symbols will be ignored.
+     */
     var enteredCode: String = ""
         set(value) {
-            require(value.length <= codeLength) { "enteredCode=$value is longer than $codeLength" }
-            field = value
+            val digits = value.digits()
+            require(digits.length <= codeLength) { "enteredCode=$digits is longer than $codeLength" }
+            field = digits
             onChangeListener?.onCodeChange(
-                code = value,
-                isComplete = value.length == codeLength
+                code = digits,
+                isComplete = digits.length == codeLength
             )
             updateState()
         }
 
+    /**
+     * Change listener for the entered code. Will be called for all possible changes:
+     * manual typing, pasting, SMS auto-detection, etc.
+     */
     var onChangeListener: OnChangeListener? = null
 
     internal var style: Style = SmsConfirmationViewStyleUtils.getDefault(context)
@@ -75,6 +87,10 @@ class SmsConfirmationView @JvmOverloads constructor(
             }
     }
 
+    private val actionModeCallback: ActionMode.Callback = ActionModeCallback(context) { text ->
+        enteredCode = text.digits().take(codeLength)
+    }
+
     private var smsRetrieverResultLauncher: ActivityResultLauncher<Intent>? = null
 
     private val symbolSubviews: Sequence<SymbolView>
@@ -97,6 +113,16 @@ class SmsConfirmationView @JvmOverloads constructor(
             smsRetrieverResultLauncher = getActivity()
                 ?.takeIf { it.lifecycle.currentState < Lifecycle.State.STARTED }
                 ?.registerForActivityResult(SmsRetrieverContract(), activityResultCallback)
+        }
+
+        setOnClickListener {
+            if (requestFocus()) {
+                showKeyboard()
+            }
+        }
+        setOnLongClickListener {
+            showPopupMenuIfNeeded()
+            true
         }
     }
 
@@ -137,6 +163,16 @@ class SmsConfirmationView @JvmOverloads constructor(
         }
     }
 
+    private fun showPopupMenuIfNeeded() {
+        if (style.isPasteEnabled.not()) return
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            startActionMode(actionModeCallback, ActionMode.TYPE_FLOATING)
+        } else {
+            startActionMode(actionModeCallback)
+        }
+    }
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
@@ -169,19 +205,22 @@ class SmsConfirmationView @JvmOverloads constructor(
             appendSymbol(enteredSymbol)
             true
         }
+
         event.keyCode == KeyEvent.KEYCODE_DEL -> {
             removeLastSymbol()
             true
         }
+
         event.keyCode == KeyEvent.KEYCODE_ENTER -> {
             hideKeyboard()
             true
         }
+
         else -> false
     }
 
     private fun KeyEvent.isDigitKey(): Boolean {
-        return this.keyCode in KeyEvent.KEYCODE_0..KeyEvent.KEYCODE_9
+        return keyCode in KeyEvent.KEYCODE_0..KeyEvent.KEYCODE_9
     }
 
     private fun appendSymbol(symbol: Char) {
@@ -200,16 +239,6 @@ class SmsConfirmationView @JvmOverloads constructor(
         this.enteredCode = enteredCode.substring(0, enteredCode.length - 1)
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (event.action == MotionEvent.ACTION_DOWN && requestFocus()) {
-            showKeyboard()
-            return true
-        }
-
-        return super.onTouchEvent(event)
-    }
-
     override fun onCheckIsTextEditor(): Boolean = true
 
     override fun onCreateInputConnection(outAttrs: EditorInfo): InputConnection {
@@ -217,17 +246,15 @@ class SmsConfirmationView @JvmOverloads constructor(
             inputType = InputType.TYPE_CLASS_NUMBER
             imeOptions = EditorInfo.IME_ACTION_DONE
         }
-        val publicCon: InputConnectionWrapper = object : InputConnectionWrapper(
-            BaseInputConnection(this, false), true
-        ) {
+        return object : InputConnectionWrapper(BaseInputConnection(this, false), true) {
+
             override fun deleteSurroundingText(beforeLength: Int, afterLength: Int): Boolean {
                 return if (beforeLength == 1 && afterLength == 0) {
-                    (sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
-                            && sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL)))
+                    sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
+                        && sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL))
                 } else super.deleteSurroundingText(beforeLength, afterLength)
             }
         }
-        return publicCon
     }
 
     override fun onDetachedFromWindow() {
@@ -256,8 +283,7 @@ class SmsConfirmationView @JvmOverloads constructor(
         context.registerReceiver(
             smsBroadcastReceiver,
             IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION),
-            SmsRetriever.SEND_PERMISSION,
-            null
+            SmsRetriever.SEND_PERMISSION
         )
 
         SmsRetriever.getClient(context).startSmsUserConsent(null)
@@ -292,7 +318,7 @@ class SmsConfirmationView @JvmOverloads constructor(
     }
 
     /**
-     * Interface definition for a callback invoked when a views's entered code is changed.
+     * Interface definition for a callback invoked when the entered code changes.
      */
     fun interface OnChangeListener {
         /**
@@ -305,6 +331,7 @@ class SmsConfirmationView @JvmOverloads constructor(
 
     internal data class Style(
         val codeLength: Int,
+        val isPasteEnabled: Boolean,
         val symbolsSpacing: Int,
         val symbolViewStyle: SymbolView.Style,
         val smsDetectionMode: SmsDetectionMode = SmsDetectionMode.AUTO

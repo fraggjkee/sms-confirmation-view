@@ -3,6 +3,8 @@ A custom Android's `View` implementing all the necessary UI for a typical "enter
 
 Supports **automatic code retrieval from incoming SMS messages**. This feature is implemented using the [Consent API](https://developers.google.com/identity/sms-retriever/user-consent/overview).
 
+Supports **copy-pasting from the clipboard** by showing a floating pop-up in response to a long press event (similarly to `EditText`). 
+
 You may find my initial motivations & a little bit more detailed information in this [Medium post](https://medium.com/swlh/implementing-the-complete-sms-verification-flow-using-consent-api-in-android-ae0327f74658).
 
 <img src="/images/screenshot2.png"  width="250">
@@ -21,7 +23,7 @@ allprojects {
 **Step 2.** Add the dependency
 ```gradle
 dependencies {
-    implementation "com.github.fraggjkee:sms-confirmation-view:1.7.1"
+    implementation "com.github.fraggjkee:sms-confirmation-view:1.8.1"
 }
 ```
 
@@ -54,6 +56,7 @@ Here's the list of available XML attributes:
 
 - `scv_codeLength`: expected confirmation code length. Default value = [4](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/java/com/fraggjkee/smsconfirmationview/SmsConfirmationView.kt#L186)
 - `scv_showCursor`: controls whether the blinking cursor should be displayed for an active symbol. Default value = `true`. Uses the color specified by `scv_symbolBorderActiveColor`.
+- `scv_pasteEnabled`: enables or disables Copy/Paste support. Default value = `true`.
 - `scv_symbolsSpacing`: gap between individual symbol subviews. Default value = [8dp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L4)
 - `scv_symbolWidth`: width of each individual symbol cell. Default value = [42dp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L6)
 - `scv_symbolHeight`: height of each individual symbol cell. Default value = [48dp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L7)
@@ -66,7 +69,7 @@ Here's the list of available XML attributes:
 - `scv_symbolBorderWidth`: thickness of the stroke used to draw symbol subview's border. Default value = [2dp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L9)
 - `scv_symbolBorderCornerRadius`: corner radius for symbol subview's border. Default value = [2dp](https://github.com/fraggjkee/SmsConfirmationView/blob/fb2be87c0510a10a95b343f79380de72f6fe7742/library/src/main/res/values/dimens.xml#L5)
 
-All of these attributes can also be changed **programatically** (XML customization is the preferred way though), check out the list of available extensions [here](https://github.com/fraggjkee/SmsConfirmationView/blob/master/library/src/main/java/com/fraggjkee/smsconfirmationview/SmsConfirmationViewExt.kt).
+All of these attributes can also be changed **programmatically** (XML customization is the preferred way though), check out the list of available extensions [here](https://github.com/fraggjkee/SmsConfirmationView/blob/master/library/src/main/java/com/fraggjkee/smsconfirmationview/SmsConfirmationViewExt.kt).
 
 # SMS Detection modes
 - `app:scv_smsDetectionMode="disabled"`: Prevents the view from using SMS Consent API, i.e. this option simply disables automatic SMS detection.

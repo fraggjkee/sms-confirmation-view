@@ -4,18 +4,26 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'maven-publish'
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "30.0.3"
+    namespace 'com.fraggjkee.smsconfirmationview'
+
+    compileSdk = 34
+    buildToolsVersion = "34.0.0"
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 31
-
-        versionCode 1
-        versionName "1.7.1"
+        targetSdkVersion 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
     }
 
     buildTypes {
@@ -32,23 +40,27 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "com.google.android.material:material:1.6.1"
+    implementation "com.google.android.material:material:1.9.0"
 
     // Required for automatic code retrieval from SMS (Consent API)
     // https://developers.google.com/identity/sms-retriever/user-consent/overview
-    implementation "com.google.android.gms:play-services-auth:20.2.0"
+    implementation "com.google.android.gms:play-services-auth:20.6.0"
     implementation "com.google.android.gms:play-services-auth-api-phone:18.0.1"
 
     // Contains modern "Start activity/fragment for result" APIs which are
     // required for SMS retrieval feature
-    implementation "androidx.activity:activity-ktx:1.4.0"
-    implementation "androidx.fragment:fragment-ktx:1.4.1"
+    implementation "androidx.activity:activity-ktx:1.7.2"
+    implementation "androidx.fragment:fragment-ktx:1.6.1"
 }
 
-project.afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.fraggjkee'
+            artifactId = 'smsconfirmationview'
+            version = '1.7.3'
+
+            afterEvaluate {
                 from components.release
             }
         }
