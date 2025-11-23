@@ -52,7 +52,7 @@ publishing {
         release(MavenPublication) {
             groupId = 'com.fraggjkee'
             artifactId = 'smsconfirmationview'
-            version = '1.7.3'
+            version = '1.7.4'
 
             afterEvaluate {
                 from components.release
