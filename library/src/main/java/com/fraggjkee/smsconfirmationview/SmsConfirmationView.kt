@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import android.text.InputType
@@ -165,12 +164,7 @@ class SmsConfirmationView @JvmOverloads constructor(
 
     private fun showPopupMenuIfNeeded() {
         if (style.isPasteEnabled.not()) return
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            startActionMode(actionModeCallback, ActionMode.TYPE_FLOATING)
-        } else {
-            startActionMode(actionModeCallback)
-        }
+        startActionMode(actionModeCallback, ActionMode.TYPE_FLOATING)
     }
 
     override fun onAttachedToWindow() {

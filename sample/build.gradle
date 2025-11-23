@@ -3,22 +3,16 @@ apply plugin: 'kotlin-android'
 
 android {
     namespace 'com.fraggjkee.smsconfirmationview.sample'
-
     compileSdk = 36
-
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = '17'
-    }
-
     defaultConfig {
         applicationId "com.fraggjkee.smsconfirmationview"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 36
         versionCode 1
         versionName "1.0"
